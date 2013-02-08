@@ -1,0 +1,39 @@
+{
+  "name": "crumb",
+  "description": "CSRF crumb generation plugin",
+  "version": "0.0.1",
+  "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
+  "contributors": [],
+  "repository": "git://github.com/walmartlabs/crumb",
+  "main": "index",
+  "keywords": [
+    "hapi",
+    "plugin",
+    "cookies",
+    "csrf",
+    "session"
+  ],
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {
+    "hoek": "0.4.x"
+  },
+  "devDependencies": {
+    "hapi": "0.x.x",
+    "mocha": "1.x.x",
+    "chai": "1.x.x"
+  },
+  "scripts": {
+    "test": "make test && make unit"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/hueniverse/crumb/raw/master/LICENSE"
+    }
+  ],
+  "hapi": {
+    "plugin": "1.x.x"
+  }
+}
