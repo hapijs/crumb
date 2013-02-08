@@ -17,12 +17,15 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "hoek": "0.4.x"
+    "boom": "0.2.x",
+    "hoek": "0.4.x",
+    "cryptiles": "0.0.x"
   },
   "devDependencies": {
     "hapi": "0.x.x",
     "mocha": "1.x.x",
-    "chai": "1.x.x"
+    "chai": "1.x.x",
+    "handlebars": "1.0.x"
   },
   "scripts": {
     "test": "make test && make unit"

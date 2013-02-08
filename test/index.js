@@ -2,7 +2,7 @@
 
 var Chai = require('chai');
 var Hapi = require('hapi');
-var Jar = process.env.TEST_COV ? require('../lib-cov') : require('../lib');
+var Crumb = process.env.TEST_COV ? require('../lib-cov') : require('../lib');
 
 
 // Declare internals
@@ -15,76 +15,87 @@ var internals = {};
 var expect = Chai.expect;
 
 
-describe('Jar', function () {
+describe('Crumb', function () {
 
     // Wrapper is required for coverage
 
     var plugin = {
-        name: 'jar',
+        name: 'crumb',
         version: Hapi.utils.loadPackage().version,
         hapi: {
             plugin: '1.x.x'
         },
-        register: Jar.register
+        register: Crumb.register
     };
 
-    it('returns current version', function (done) {
+    it('returns view with crumb', function (done) {
 
         var options = {
-            permissions: {
-                ext: true
-            },
-            plugin: {
-                name: 'jarx',
-                isSingleUse: true,
-                options: {
-                    password: 'password',
-                    isSecure: true
+            views: {
+                path: __dirname + '/templates',
+                engine: {
+                    module: 'handlebars'
                 }
             }
         };
 
-        var server = new Hapi.Server();
+        var server = new Hapi.Server(options);
 
         server.route([
             {
                 method: 'GET', path: '/1', handler: function () {
 
-                    expect(this.state.jarx).to.not.exist;
-                    expect(this.api.jar).to.deep.equal({});
-                    this.api.jar.some = { value: 123 };
-                    return this.reply('1');
+                    expect(this.api.crumb).to.exist;
+                    expect(this.server.api.crumb.generate).to.exist;
+
+                    return this.reply.view('index', {
+                        title: 'test',
+                        message: 'hi'
+                    }).send();
                 }
             },
             {
-                method: 'GET', path: '/2', handler: function () {
+                method: 'POST', path: '/2', config: { plugins: { crumb: true } }, handler: function () {
 
-                    expect(this.state.jarx).to.deep.equal({ some: { value: 123 } });
-                    expect(this.api.jar).to.deep.equal({});
-                    return this.reply('2');
+                    expect(this.payload).to.deep.equal({ key: 'value' });
+                    return this.reply('valid');
                 }
             }
         ]);
 
-        server.plugin().register(plugin, options, function (err) {
+
+        var pluginOptions = {
+            permissions: {
+                ext: true
+            },
+            plugin: {
+                options: {
+                    isSecure: true
+                }
+            }
+        };
+
+        server.plugin().register(plugin, pluginOptions, function (err) {
 
             expect(err).to.not.exist;
             server.inject({ method: 'GET', url: '/1' }, function (res) {
 
-                expect(res.result).to.equal('1');
                 var header = res.headers['Set-Cookie'];
                 expect(header.length).to.equal(1);
                 expect(header[0]).to.contain('Secure');
 
-                var cookie = header[0].match(/(jarx=[^\x00-\x20\"\,\;\\\x7F]*)/);
+                var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                server.inject({ method: 'GET', url: '/2', headers: { cookie: cookie[1] } }, function (res) {
+                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, function (res) {
 
-                    expect(res.result).to.equal('2');
-                    var header = res.headers['Set-Cookie'];
-                    expect(header.length).to.equal(1);
-                    expect(header[0]).to.equal('jarx=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure');
-                    done();
+                    expect(res.result).to.equal('valid');
+
+                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "x' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, function (res) {
+
+                        expect(res.statusCode).to.equal(403);
+                        done();
+                    });
                 });
             });
         });
