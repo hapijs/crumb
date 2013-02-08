@@ -45,8 +45,8 @@ describe('Crumb', function () {
             {
                 method: 'GET', path: '/1', handler: function () {
 
-                    expect(this.api.crumb).to.exist;
-                    expect(this.server.api.crumb.generate).to.exist;
+                    expect(this.plugins.crumb).to.exist;
+                    expect(this.server.plugins.crumb.generate).to.exist;
 
                     return this.reply.view('index', {
                         title: 'test',
