@@ -1,7 +1,7 @@
 {
   "name": "crumb",
   "description": "CSRF crumb generation plugin",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "contributors": [],
   "repository": "git://github.com/walmartlabs/crumb",
@@ -17,7 +17,7 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "boom": "0.2.x",
+    "boom": "0.3.x",
     "hoek": "0.4.x",
     "cryptiles": "0.0.x"
   },
