@@ -2,7 +2,7 @@
 
 var Chai = require('chai');
 var Hapi = require('hapi');
-var Crumb = process.env.TEST_COV ? require('../lib-cov') : require('../lib');
+var Crumb = require('../lib');
 
 
 // Declare internals
@@ -16,17 +16,6 @@ var expect = Chai.expect;
 
 
 describe('Crumb', function () {
-
-    // Wrapper is required for coverage
-
-    var plugin = {
-        name: 'crumb',
-        version: Hapi.utils.loadPackage().version,
-        hapi: {
-            plugin: '1.x.x'
-        },
-        register: Crumb.register
-    };
 
     it('returns view with crumb', function (done) {
 
@@ -63,7 +52,6 @@ describe('Crumb', function () {
             }
         ]);
 
-
         var pluginOptions = {
             permissions: {
                 ext: true
@@ -75,7 +63,7 @@ describe('Crumb', function () {
             }
         };
 
-        server.plugin().register(plugin, pluginOptions, function (err) {
+        server.plugin().require('../', pluginOptions, function (err) {
 
             expect(err).to.not.exist;
             server.inject({ method: 'GET', url: '/1' }, function (res) {
