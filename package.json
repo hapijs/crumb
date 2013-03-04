@@ -1,7 +1,7 @@
 {
   "name": "crumb",
   "description": "CSRF crumb generation plugin",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "contributors": [],
   "repository": "git://github.com/walmartlabs/crumb",
@@ -18,14 +18,14 @@
   },
   "dependencies": {
     "boom": "0.3.x",
-    "hoek": "0.4.x",
-    "cryptiles": "0.0.x"
+    "hoek": "0.6.x",
+    "cryptiles": "0.1.x"
   },
   "peerDependencies": {
-    "hapi": "0.14.x"
+    "hapi": "0.15.x"
   },
   "devDependencies": {
-    "hapi": "0.14.x",
+    "hapi": "0.15.x",
     "mocha": "1.x.x",
     "chai": "1.x.x",
     "handlebars": "1.0.x",

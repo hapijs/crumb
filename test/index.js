@@ -52,7 +52,7 @@ describe('Crumb', function () {
             }
         ]);
 
-        server.plugin().allow({ ext: true }).require('../', { cookieOptions: { isSecure: true } }, function (err) {
+        server.plugin.allow({ ext: true }).require('../', { cookieOptions: { isSecure: true } }, function (err) {
 
             expect(err).to.not.exist;
             server.inject({ method: 'GET', url: '/1' }, function (res) {
