@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "contributors": [],
-  "repository": "git://github.com/walmartlabs/crumb",
+  "repository": "git://github.com/spumko/crumb",
   "main": "index",
   "keywords": [
     "hapi",
@@ -40,7 +40,7 @@
   "licenses": [
     {
       "type": "BSD",
-      "url": "http://github.com/walmartlabs/crumb/raw/master/LICENSE"
+      "url": "http://github.com/spumko/crumb/raw/master/LICENSE"
     }
   ]
 }
