@@ -1,5 +1,5 @@
 <a href="https://github.com/spumko"><img src="https://raw.github.com/spumko/spumko/master/images/from.png" align="right" /></a>
-![crumb Logo](/images/crumb.png)
+![crumb Logo](https://raw.github.com/spumko/crumb/master/images/crumb.png)
 
 CSRF crumb generation for [**hapi**](https://github.com/spumko/hapi)
 
