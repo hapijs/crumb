@@ -1,6 +1,6 @@
-<a href="https://github.com/walmartlabs/blammo"><img src="https://raw.github.com/walmartlabs/blammo/master/images/from.png" align="right" /></a>
+<a href="https://github.com/spumko"><img src="https://raw.github.com/spumko/spumko/master/images/from.png" align="right" /></a>
 ![crumb Logo](/images/crumb.png)
 
-CSRF crumb generation for [**hapi**](https://github.com/walmartlabs/hapi)
+CSRF crumb generation for [**hapi**](https://github.com/spumko/hapi)
 
-[![Build Status](https://secure.travis-ci.org/walmartlabs/crumb.png)](http://travis-ci.org/walmartlabs/crumb)
+[![Build Status](https://secure.travis-ci.org/spumko/crumb.png)](http://travis-ci.org/spumko/crumb)
