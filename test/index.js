@@ -1,8 +1,8 @@
 // Load modules
 
-var Chai = require('chai');
+var Lab = require('lab');
 var Hapi = require('hapi');
-var Crumb = require('../lib');
+var Crumb = require('../');
 
 
 // Declare internals
@@ -12,7 +12,11 @@ var internals = {};
 
 // Test shortcuts
 
-var expect = Chai.expect;
+var expect = Lab.expect;
+var before = Lab.before;
+var after = Lab.after;
+var describe = Lab.experiment;
+var it = Lab.test;
 
 
 describe('Crumb', function () {
@@ -57,7 +61,7 @@ describe('Crumb', function () {
             expect(err).to.not.exist;
             server.inject({ method: 'GET', url: '/1' }, function (res) {
 
-                var header = res.headers['Set-Cookie'];
+                var header = res.headers['set-cookie'];
                 expect(header.length).to.equal(1);
                 expect(header[0]).to.contain('Secure');
 
