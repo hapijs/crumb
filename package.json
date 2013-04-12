@@ -14,7 +14,7 @@
     "session"
   ],
   "engines": {
-    "node": "0.8.x"
+    "node": "0.10.x"
   },
   "dependencies": {
     "boom": "0.3.x",
@@ -22,12 +22,12 @@
     "cryptiles": "0.1.x"
   },
   "peerDependencies": {
-    "hapi": "0.16.x"
+    "hapi": "1.0.x"
   },
   "devDependencies": {
-    "hapi": "0.16.x",
+    "hapi": "1.0.x",
     "handlebars": "1.0.x",
-    "lab": "0.0.x",
+    "lab": "0.1.x",
     "complexity-report": "0.x.x"
   },
   "scripts": {
