@@ -26,8 +26,8 @@ describe('Crumb', function () {
         var options = {
             views: {
                 path: __dirname + '/templates',
-                engine: {
-                    module: 'handlebars'
+                engines: {
+                    html: 'handlebars'
                 }
             }
         };
@@ -44,7 +44,7 @@ describe('Crumb', function () {
                     return this.reply.view('index', {
                         title: 'test',
                         message: 'hi'
-                    }).send();
+                    });
                 }
             },
             {
@@ -62,7 +62,7 @@ describe('Crumb', function () {
             }
         ]);
 
-        server.plugin.allow({ ext: true }).require('../', { cookieOptions: { isSecure: true } }, function (err) {
+        server.pack.allow({ ext: true }).require('../', { cookieOptions: { isSecure: true } }, function (err) {
 
             expect(err).to.not.exist;
             server.inject({ method: 'GET', url: '/1' }, function (res) {
