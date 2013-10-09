@@ -7,7 +7,7 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/spumko/ha
 
 The following options are available when registering the plugin
 
-* 'name' - the name of the cookie to store the csrf crumb in
+* 'name' - the name of the cookie to store the csrf crumb in (defaults to 'crumb')
 * 'size' - the length of the crumb to generate (defaults to 43, which is 256 bits, see [cryptile](https://github.com/hueniverse/cryptiles) for more information)
 * 'autoGenerate' - whether to automatically generate a new crumb for requests (defaults to true)
 * 'addToViewContext' - whether to automatically add the crumb to view contexts as the given name (defaults to true)
@@ -16,4 +16,4 @@ The following options are available when registering the plugin
 Additionally, some configuration can be passed on a per-route basis
 
 * 'name' - the name used in the view contexts and payloads for the crumb (defaults to whatever the name value in the main settings is)
-* 'source' - can be either 'payload' or 'query' specifying how the crumb will be sent in requests
+* 'source' - can be either 'payload' or 'query' specifying how the crumb will be sent in requests (defaults to payload)
