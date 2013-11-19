@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{title}}</title>
+    </head>
+    <body>
+        <div>
+            <h1>This is a valid form</h1>
+            <form method="POST">
+                <input type="hidden" name="crumb" value="{{crumb}}"/>
+                <input name="message" value="{{message}}"/>
+                <input type="submit"/>
+            </form>
+        </div>
+        <div>
+            <h1>This is an invalid form</h1>
+            <form method="POST">
+                <input name="message" value="{{message}}"/>
+                <input type="submit"/>
+            </form>
+        </div>
+    </body>
+</html>
