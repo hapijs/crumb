@@ -36,7 +36,7 @@ describe('Crumb', function () {
 
         server.route([
             {
-                method: 'GET', path: '/1', config: { plugins: { crumb: false } }, handler: function () {
+                method: 'GET', path: '/1', handler: function () {
 
                     expect(this.plugins.crumb).to.exist;
                     expect(this.server.plugins.crumb.generate).to.exist;
@@ -58,6 +58,15 @@ describe('Crumb', function () {
                 method: 'POST', path: '/3', config: { payload: 'stream' }, handler: function () {
 
                     return this.reply('never');
+                }
+            },
+            {
+                method: 'GET', path: '/4', config: { plugins: { crumb: false } }, handler: function () {
+
+                    return this.reply.view('index', {
+                        title: 'test',
+                        message: 'hi'
+                    });
                 }
             }
         ]);
@@ -85,7 +94,13 @@ describe('Crumb', function () {
                         server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, function (res) {
 
                             expect(res.statusCode).to.equal(403);
-                            done();
+
+                            server.inject({ method: 'GET', url: '/4' }, function (res) {
+
+                                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
+
+                                done();
+                            });
                         });
                     });
                 });
