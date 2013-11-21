@@ -1,10 +1,13 @@
 {
   "name": "crumb",
-  "description": "CSRF crumb generation plugin",
-  "version": "0.3.1",
+  "description": "CSRF crumb generation and validation plugin",
+  "version": "0.3.2",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
-  "contributors": ["Marcus Stong <stongo@gmail.com>"],
+  "contributors": ["Marcus Stong <stongo@gmail.com>", "Nathan LaFreniere <quitlahok@gmail.com>"],
   "repository": "git://github.com/spumko/crumb",
+  "bugs": {
+    "url": "https://github.com/spumko/crumb/issues"
+  },
   "main": "index",
   "keywords": [
     "hapi",
