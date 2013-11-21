@@ -36,7 +36,7 @@ describe('Crumb', function () {
 
         server.route([
             {
-                method: 'GET', path: '/1', config: { plugins: { crumb: false } }, handler: function () {
+                method: 'GET', path: '/1', handler: function () {
 
                     expect(this.plugins.crumb).to.exist;
                     expect(this.server.plugins.crumb.generate).to.exist;
