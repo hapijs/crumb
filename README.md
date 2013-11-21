@@ -12,6 +12,7 @@ The following options are available when registering the plugin
 * 'autoGenerate' - whether to automatically generate a new crumb for requests (defaults to true)
 * 'addToViewContext' - whether to automatically add the crumb to view contexts as the given key (defaults to true)
 * 'cookieOptions' - storage options for the cookie containing the crumb, see the [server.state](https://github.com/spumko/hapi/blob/master/docs/Reference.md#serverstatename-options) documentation of hapi for more information
+* 'restful' - RESTful mode that validates crumb tokens from "X-CSRF-Token" request header for POST, PUT, PATCH and DELETE server routes. Disables payload/query crumb validation
 
 Additionally, some configuration can be passed on a per-route basis
 
