@@ -4,10 +4,8 @@ var server = Hapi.createServer('127.0.0.1', 8000);
 
 // Add Crumb plugin
 
-server.pack.require('../', { restful: true}, function(err) {
-     if (err) {
-        console.error('failed loading Crumb plugin');
-     }
+server.pack.require('../', { restful: true }, function(err) {
+    if (err) throw err;
 });
 
 server.route([
