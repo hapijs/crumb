@@ -36,34 +36,34 @@ describe('Crumb', function () {
 
         server.route([
             {
-                method: 'GET', path: '/1', handler: function () {
+                method: 'GET', path: '/1', handler: function (request, reply) {
 
-                    expect(this.plugins.crumb).to.exist;
-                    expect(this.server.plugins.crumb.generate).to.exist;
+                    expect(request.plugins.crumb).to.exist;
+                    expect(request.server.plugins.crumb.generate).to.exist;
 
-                    return this.reply.view('index', {
+                    return reply.view('index', {
                         title: 'test',
                         message: 'hi'
                     });
                 }
             },
             {
-                method: 'POST', path: '/2', handler: function () {
+                method: 'POST', path: '/2', handler: function (request, reply) {
 
-                    expect(this.payload).to.deep.equal({ key: 'value' });
-                    return this.reply('valid');
+                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    return reply('valid');
                 }
             },
             {
-                method: 'POST', path: '/3', config: { payload: 'stream' }, handler: function () {
+                method: 'POST', path: '/3', config: { payload: { output: 'stream' } }, handler: function (request, reply) {
 
-                    return this.reply('never');
+                    return reply('never');
                 }
             },
             {
-                method: 'GET', path: '/4', config: { plugins: { crumb: false } }, handler: function () {
+                method: 'GET', path: '/4', config: { plugins: { crumb: false } }, handler: function (request, reply) {
 
-                    return this.reply.view('index', {
+                    return reply.view('index', {
                         title: 'test',
                         message: 'hi'
                     });
@@ -71,7 +71,7 @@ describe('Crumb', function () {
             }
         ]);
 
-        server.pack.allow({ ext: true }).require('../', { cookieOptions: { isSecure: true } }, function (err) {
+        server.pack.require('../', { cookieOptions: { isSecure: true } }, function (err) {
 
             expect(err).to.not.exist;
             server.inject({ method: 'GET', url: '/1' }, function (res) {
