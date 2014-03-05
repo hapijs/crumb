@@ -87,6 +87,13 @@ describe('Crumb', function () {
                     return reply('valid');
                 }
             },
+            {
+                method: 'POST', path: '/8', config: { plugins: { crumb: { restful: false } } }, handler: function (request, reply) {
+
+                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    return reply('valid');
+                }
+            }
 
         ]);
 
@@ -150,7 +157,12 @@ describe('Crumb', function () {
                                                     server.inject({ method: 'POST', url: '/7', payload: '{ "key": "value" }' }, function (res) {
 
                                                         expect(res.result).to.equal('valid');
-                                                        done();
+
+                                                        server.inject({ method: 'POST', url: '/8', payload: '{ "key": "value" }', headers: validHeader }, function (res) {
+
+                                                            expect(res.result).to.equal('valid');
+                                                            done();
+                                                        });
                                                     });
                                                 });
                                             });
