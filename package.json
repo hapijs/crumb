@@ -1,7 +1,7 @@
 {
   "name": "crumb",
   "description": "CSRF crumb generation and validation plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "contributors": [
     "Marcus Stong <stongo@gmail.com>",
