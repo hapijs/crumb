@@ -18,16 +18,16 @@ server.pack.require('../', { cookieOptions: { isSecure: false } }, function (err
 server.route({
     method: 'get',
     path: '/',
-    handler: function (request) {
-        return request.reply.view('index', { title: 'test', message: 'hi' });
+    handler: function (request, reply) {
+        return reply.view('index', { title: 'test', message: 'hi' });
     }
 });
 
 server.route({
     method: 'post',
     path: '/',
-    handler: function (request) {
-        return request.reply.view('message', { title: 'test', message: request.payload.message });
+    handler: function (request, reply) {
+        return reply.view('message', { title: 'test', message: request.payload.message });
     }
 });
 
