@@ -18,3 +18,4 @@ Additionally, some configuration can be passed on a per-route basis
 
 * 'key' - the key used in the view contexts and payloads for the crumb (defaults to whatever the key value in the main settings is)
 * 'source' - can be either 'payload' or 'query' specifying how the crumb will be sent in requests (defaults to payload)
+* 'restful' - an override for the server's 'restful' setting (defaults to match server setting)
