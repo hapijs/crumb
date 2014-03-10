@@ -88,7 +88,7 @@ describe('Crumb', function () {
                 }
             },
             {
-                method: 'POST', path: '/8', config: { plugins: { crumb: { restful: false } } }, handler: function (request, reply) {
+                method: 'POST', path: '/8', config: { plugins: { crumb: { restful: false, source: 'payload' } } }, handler: function (request, reply) {
 
                     expect(request.payload).to.deep.equal({ key: 'value' });
                     return reply('valid');
@@ -158,7 +158,10 @@ describe('Crumb', function () {
 
                                                         expect(res.result).to.equal('valid');
 
-                                                        server.inject({ method: 'POST', url: '/8', payload: '{ "key": "value" }', headers: validHeader }, function (res) {
+                                                        var payload = { key: 'value', crumb: cookie[1] };
+
+                                                        delete validHeader['x-csrf-token'];
+                                                        server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader }, function (res) {
 
                                                             expect(res.result).to.equal('valid');
                                                             done();
