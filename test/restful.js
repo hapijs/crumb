@@ -27,7 +27,7 @@ describe('Crumb', function () {
             views: {
                 path: __dirname + '/templates',
                 engines: {
-                    html: 'handlebars'
+                    html: require('handlebars')
                 }
             }
         };
@@ -97,7 +97,7 @@ describe('Crumb', function () {
 
         ]);
 
-        server.pack.require('../', { restful: true, cookieOptions: { isSecure: true } }, function (err) {
+        server.pack.register({plugin: require('../'), options: { restful: true, cookieOptions: { isSecure: true } } }, function (err) {
 
             expect(err).to.not.exist;
             server.inject({ method: 'GET', url: '/1' }, function (res) {
