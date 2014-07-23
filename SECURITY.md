@@ -25,7 +25,7 @@ This process can take some time, especially when coordination is required with m
 A blog post about the issue will be published, customers notified and attribution to the finder given.
 
 # Comments on this Policy
-Can you help make this policy / process better? Please email security@andyet.net with your comments.
+Can you help make this policy / process better? Please email stongo@gmail.com with your comments.
 
 # History
 
