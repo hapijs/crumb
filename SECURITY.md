@@ -30,7 +30,6 @@ Can you help make this policy / process better? Please email stongo@gmail.com wi
 # History
 
 * When CORS set to true and Origin request header exists, it could lead to a crumb cookie being set on a different domain. Fixed in version 3.0.0. Attributed to Marcus Stong and Tom Steele.
-* Crumb cookie was being set when route handler was 'proxy'. Fixed in version 3.0.0. Attributed to Marcus Stong and Tom Steele.
 
 # Credits
 
