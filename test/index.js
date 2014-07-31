@@ -283,9 +283,6 @@ describe('Crumb', function () {
 
                     return reply('test');
                 }
-            },
-            {
-                method: 'GET', path: '/2', handler: { proxy: { host: 'google.com', port: 443, protocol: 'https' } }
             }
         ]);
         server4.pack.register({ plugin: require('../'), options: null }, function (err) {
@@ -297,14 +294,7 @@ describe('Crumb', function () {
                 var header = res.headers['set-cookie'];
                 expect(header).to.not.contain('crumb');
 
-                server4.inject({ method: 'GET', url: '/2'}, function (res) {
-
-                    var header = res.headers['set-cookie'].toString();
-                    var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-                    expect(cookie).to.be.null;
-
-                    done();
-                });
+                done();
             });
         });
     });
