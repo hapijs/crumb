@@ -4,7 +4,7 @@ var server = Hapi.createServer('127.0.0.1', 8000);
 
 // Add Crumb plugin
 
-server.pack.require('../', { restful: true }, function(err) {
+server.pack.register({ plugin: require('../'), options: { restful: true } }, function(err) {
     if (err) throw err;
 });
 

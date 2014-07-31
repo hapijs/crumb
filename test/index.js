@@ -27,7 +27,7 @@ describe('Crumb', function () {
         views: {
             path: __dirname + '/templates',
             engines: {
-                html: 'handlebars'
+                html: require('handlebars')
             }
         }
     };
@@ -81,10 +81,16 @@ describe('Crumb', function () {
 
                     return reply.view('index');
                 }
+            },
+            {
+                method: 'GET', path: '/7', handler: function (request, reply) {
+
+                    return reply(null).redirect('/1');
+                }
             }
         ]);
 
-        server1.pack.require('../', { cookieOptions: { isSecure: true } }, function (err) {
+        server1.pack.register({ plugin: require('../'), options: { cookieOptions: { isSecure: true } } }, function (err) {
 
             expect(err).to.not.exist;
             server1.inject({ method: 'GET', url: '/1' }, function (res) {
@@ -146,8 +152,15 @@ describe('Crumb', function () {
                                         var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
                                         expect(res.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                                        done();
                                     });
+                                });
+
+                                server1.inject({method: 'GET', url: '/7'}, function(res) {
+
+                                    var cookie = res.headers['set-cookie'].toString();
+                                    expect(cookie).to.contain('crumb');
+
+                                    done();
                                 });
                             });
                         });
@@ -173,7 +186,7 @@ describe('Crumb', function () {
             }
         });
 
-        server2.pack.require('../', { cookieOptions: { isSecure: true }, addToViewContext: false }, function (err) {
+        server2.pack.register({ plugin: require('../'), options: { cookieOptions: { isSecure: true }, addToViewContext: false } }, function (err) {
 
             expect(err).to.not.exist;
             server2.inject({ method: 'GET', url: '/1' }, function (res) {
@@ -200,7 +213,7 @@ describe('Crumb', function () {
             }
         });
 
-        server3.pack.require('../', null, function (err) {
+        server3.pack.register({ plugin: require('../'), options: null }, function (err) {
 
             expect(err).to.not.exist;
 
@@ -241,7 +254,7 @@ describe('Crumb', function () {
             }
         ]);
 
-        server3.pack.require('../', { autoGenerate: false }, function (err) {
+        server3.pack.register({ plugin: require('../'), options: { autoGenerate: false } }, function (err) {
 
             expect(err).to.not.exist;
 
@@ -255,6 +268,33 @@ describe('Crumb', function () {
 
                     done();
                 });
+            });
+        });
+    });
+
+    it('does not set crumb cookie insecurely', function(done) {
+        var options = {
+            cors: true
+        }
+        var server4 = new Hapi.Server(options);
+        server4.route([
+            {
+                method: 'GET', path: '/1', handler: function (request, reply) {
+
+                    return reply('test');
+                }
+            }
+        ]);
+        server4.pack.register({ plugin: require('../'), options: null }, function (err) {
+            expect(err).to.not.exist;
+            var headers = {};
+            headers['Origin'] = '127.0.0.1'
+            server4.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
+
+                var header = res.headers['set-cookie'];
+                expect(header).to.not.contain('crumb');
+
+                done();
             });
         });
     });
