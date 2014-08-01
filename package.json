@@ -7,9 +7,9 @@
     "Marcus Stong <stongo@gmail.com>",
     "Nathan LaFreniere <quitlahok@gmail.com>"
   ],
-  "repository": "git://github.com/spumko/crumb",
+  "repository": "git://github.com/hapijs/crumb",
   "bugs": {
-    "url": "https://github.com/spumko/crumb/issues"
+    "url": "https://github.com/hapijs/crumb/issues"
   },
   "main": "index",
   "keywords": [
@@ -40,7 +40,7 @@
   "licenses": [
     {
       "type": "BSD",
-      "url": "http://github.com/spumko/crumb/raw/master/LICENSE"
+      "url": "http://github.com/hapijs/crumb/raw/master/LICENSE"
     }
   ]
 }
