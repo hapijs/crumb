@@ -5,6 +5,8 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/spumko/ha
 
 [![Build Status](https://secure.travis-ci.org/spumko/crumb.png)](http://travis-ci.org/spumko/crumb)
 
+Lead Maintainer: [Marcus Stong](https://github.com/stongo)
+
 The following options are available when registering the plugin
 
 * 'key' - the name of the cookie to store the csrf crumb in (defaults to 'crumb')
