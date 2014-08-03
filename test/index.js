@@ -152,15 +152,23 @@ describe('Crumb', function () {
                                         var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
                                         expect(res.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
+                                        server1.inject({method: 'GET', url: '/7'}, function(res) {
+
+                                            var cookie = res.headers['set-cookie'].toString();
+                                            expect(cookie).to.contain('crumb');
+
+                                            var headers = {};
+                                            headers['Origin'] = '127.0.0.1';
+
+                                            server1.inject({method: 'GET', url: '/1', headers: headers}, function(res) {
+
+                                                var cookie = res.headers['set-cookie'].toString();
+                                                expect(cookie).to.contain('crumb');
+
+                                                done();
+                                            });
+                                        });
                                     });
-                                });
-
-                                server1.inject({method: 'GET', url: '/7'}, function(res) {
-
-                                    var cookie = res.headers['set-cookie'].toString();
-                                    expect(cookie).to.contain('crumb');
-
-                                    done();
                                 });
                             });
                         });
@@ -288,7 +296,7 @@ describe('Crumb', function () {
         server4.pack.register({ plugin: require('../'), options: null }, function (err) {
             expect(err).to.not.exist;
             var headers = {};
-            headers['Origin'] = '127.0.0.1'
+            headers['Origin'] = '127.0.0.1';
             server4.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
