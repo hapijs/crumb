@@ -1,11 +1,12 @@
 {
   "name": "crumb",
   "description": "CSRF crumb generation and validation plugin",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "contributors": [
     "Marcus Stong <stongo@gmail.com>",
-    "Nathan LaFreniere <quitlahok@gmail.com>"
+    "Nathan LaFreniere <quitlahok@gmail.com>",
+    "Tom Steele <thomasjsteele@gmail.com>"
   ],
   "repository": "git://github.com/hapijs/crumb",
   "bugs": {
