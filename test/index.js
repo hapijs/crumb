@@ -306,4 +306,61 @@ describe('Crumb', function () {
             });
         });
     });
+
+    it('does not validate crumb when "skip" option returns true', function (done) {
+        var server5 = new Hapi.Server();
+        server5.route([
+            {
+                method: 'POST', path: '/1', handler: function (request, reply) {
+
+                    return reply('test');
+                }
+            }
+        ]);
+
+        var skip = function (request, reply) {
+
+            return request.headers['x-api-token'] === 'test';
+        };
+
+        server5.pack.register({ plugin: require('../'), options: { skip: skip }}, function (err) {
+            expect(err).to.not.exist;
+            var headers = {};
+            headers['X-API-Token'] = 'test';
+            server5.inject({ method: 'POST', url: '/1', headers: headers }, function (res) {
+
+                expect(res.statusCode).to.equal(200);
+                var header = res.headers['set-cookie'];
+                expect(header).to.not.contain('crumb');
+
+                done();
+            });
+        });
+    });
+
+    it('ensures crumb validation when "skip" option is not a function', function (done) {
+        var server6 = new Hapi.Server();
+        server6.route([
+            {
+                method: 'POST', path: '/1', handler: function (request, reply) {
+
+                    return reply('test');
+                }
+            }
+        ]);
+
+        var skip = true;
+
+        server6.pack.register({ plugin: require('../'), options: { skip: skip }}, function (err) {
+            expect(err).to.not.exist;
+            var headers = {};
+            headers['X-API-Token'] = 'not-test';
+            server6.inject({ method: 'POST', url: '/1', headers: headers }, function (res) {
+
+                expect(res.statusCode).to.equal(403);
+
+                done();
+            });
+        });
+    });
 });
