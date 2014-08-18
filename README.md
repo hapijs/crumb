@@ -1,4 +1,3 @@
-<a href="https://github.com/hapijs"><img src="https://raw.github.com/hapijs/spumko/master/images/from.png" align="right" /></a>
 ![crumb Logo](https://raw.github.com/hapijs/crumb/master/images/crumb.png)
 
 CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/hapi)
