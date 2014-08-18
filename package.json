@@ -2,7 +2,7 @@
   "name": "crumb",
   "description": "CSRF crumb generation and validation plugin",
   "version": "3.1.0",
-  "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
+  "author": "Eran Hammer <eran@hammer.io> (http://hueniverse.com)",
   "contributors": [
     "Marcus Stong <stongo@gmail.com>",
     "Nathan LaFreniere <quitlahok@gmail.com>",
@@ -21,7 +21,7 @@
     "session"
   ],
   "engines": {
-    "node": ">=0.10.22"
+    "node": ">=0.10.30"
   },
   "dependencies": {
     "cryptiles": "2.x.x",
