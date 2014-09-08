@@ -300,7 +300,34 @@ describe('Crumb', function () {
             server4.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
-                expect(header).to.not.contain('crumb');
+                expect(header).to.be.undefined;
+
+                done();
+            });
+        });
+    });
+
+    it('does set crumb cookie if allowOrigins set and CORS enabled', function(done) {
+        var options = {
+            cors: true
+        }
+        var server5 = new Hapi.Server(options);
+        server5.route([
+            {
+                method: 'GET', path: '/1', handler: function (request, reply) {
+
+                    return reply('test');
+                }
+            }
+        ]);
+        server5.pack.register({ plugin: require('../'), options: { allowOrigins: ['127.0.0.1']} }, function (err) {
+            expect(err).to.not.exist;
+            var headers = {};
+            headers['Origin'] = '127.0.0.1';
+            server5.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
+
+                var header = res.headers['set-cookie'];
+                expect(header[0]).to.contain('crumb');
 
                 done();
             });
@@ -308,8 +335,8 @@ describe('Crumb', function () {
     });
 
     it('does not validate crumb when "skip" option returns true', function (done) {
-        var server5 = new Hapi.Server();
-        server5.route([
+        var server6 = new Hapi.Server();
+        server6.route([
             {
                 method: 'POST', path: '/1', handler: function (request, reply) {
 
@@ -323,11 +350,11 @@ describe('Crumb', function () {
             return request.headers['x-api-token'] === 'test';
         };
 
-        server5.pack.register({ plugin: require('../'), options: { skip: skip }}, function (err) {
+        server6.pack.register({ plugin: require('../'), options: { skip: skip }}, function (err) {
             expect(err).to.not.exist;
             var headers = {};
             headers['X-API-Token'] = 'test';
-            server5.inject({ method: 'POST', url: '/1', headers: headers }, function (res) {
+            server6.inject({ method: 'POST', url: '/1', headers: headers }, function (res) {
 
                 expect(res.statusCode).to.equal(200);
                 var header = res.headers['set-cookie'];
