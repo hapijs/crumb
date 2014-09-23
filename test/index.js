@@ -364,15 +364,28 @@ describe('Crumb', function () {
             }
         ]);
         server4.pack.register({ plugin: require('../'), options: null }, function (err) {
+
             expect(err).to.not.exist;
+
             var headers = {};
-            headers['Origin'] = '127.0.0.1';
+            headers['Host'] = server4.info.uri.split(':')[1].substring(2);
+
             server4.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
-                expect(header).to.be.undefined;
+                expect(header[0]).to.contain('crumb');
 
-                done();
+                delete headers['Host'];
+
+                server4.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
+
+                    headers['Origin'] = '127.0.0.1';
+
+                    var header = res.headers['set-cookie'];
+                    expect(header).to.be.undefined;
+
+                    done();
+                });
             });
         });
     });
@@ -413,7 +426,15 @@ describe('Crumb', function () {
                         var header = res.headers['set-cookie'];
                         expect(header).to.be.undefined;
 
-                        done();
+                        delete headers['Origin'];
+
+                        server5.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
+
+                            var header = res.headers['set-cookie'];
+                            expect(header).to.be.undefined;
+
+                            done();
+                        });
                     });
                 });
             });
