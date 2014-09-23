@@ -15,7 +15,7 @@ The following options are available when registering the plugin
 * 'cookieOptions' - storage options for the cookie containing the crumb, see the [server.state](https://github.com/hapijs/hapi/blob/master/docs/Reference.md#serverstatename-options) documentation of hapi for more information
 * 'restful' - RESTful mode that validates crumb tokens from "X-CSRF-Token" request header for POST, PUT, PATCH and DELETE server routes. Disables payload/query crumb validation (defaults to false)
 * 'skip' - a function with the signature of function (request reply) {}, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped (defaults to false)
-* 'allowOrigins' - an array of origins to set Crumb cookie on if CORS is enabled. Supports "*" wildcards for domain segments and port ie "*.domain.com" or "domain.com:*". "*" by itself is not allowed
+* 'allowOrigins' - an array of origins to set Crumb cookie on if CORS is enabled. Supports '\*' wildcards for domain segments and port ie "\*.domain.com" or "domain.com:\*". "\*" by itself is not allowed
 
 Additionally, some configuration can be passed on a per-route basis
 
