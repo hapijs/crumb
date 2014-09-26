@@ -6,7 +6,13 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/ha
 
 Lead Maintainer: [Marcus Stong](https://github.com/stongo)
 
-Version 3.x.x is under development and is not working properly on CORS enabled servers. If you wish to use Crumb with a CORS enabled server, please use version 2.x.x but be advised the Crumb token may be leaked to untrusted sites. Refer to `SECURITY.md` for more information on the security issue.
+## CORS
+
+To use Crumb securely with CORS, it's a requirement to set server `host` to a hostname rather than an IP for Crumb to determine same origin requests.
+
+Version 3.x.x is under development. If you wish to use Crumb with a CORS enabled server, please use version 2.x.x for the time being, but be advised the Crumb token may be leaked to untrusted sites. Refer to `SECURITY.md` for more information on the security issue.
+
+## Plugin Options
 
 The following options are available when registering the plugin
 
