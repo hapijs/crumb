@@ -368,7 +368,7 @@ describe('Crumb', function () {
             expect(err).to.not.exist;
 
             var headers = {};
-            headers['Host'] = server4.info.uri.split(':')[1].substring(2);
+            headers['Host'] = server4.info.uri;
 
             server4.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
