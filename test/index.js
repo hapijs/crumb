@@ -40,7 +40,7 @@ describe('Crumb', function () {
                 method: 'GET', path: '/1', handler: function (request, reply) {
 
                     expect(request.plugins.crumb).to.exist();
-                    expect(request.connection.plugins.crumb.generate).to.exist();
+                    expect(request.server.plugins.crumb.generate).to.exist();
 
                     return reply.view('index', {
                         title: 'test',
@@ -196,7 +196,7 @@ describe('Crumb', function () {
             method: 'GET', path: '/1', handler: function (request, reply) {
 
                 expect(request.plugins.crumb).to.exist();
-                expect(request.connection.plugins.crumb.generate).to.exist();
+                expect(request.server.plugins.crumb.generate).to.exist();
 
                 return reply.view('index', {
                     title: 'test',
@@ -232,7 +232,7 @@ describe('Crumb', function () {
             method: 'GET', path: '/1', handler: function (request, reply) {
 
                 expect(request.plugins.crumb).to.exist();
-                expect(request.connection.plugins.crumb.generate).to.exist();
+                expect(request.server.plugins.crumb.generate).to.exist();
 
                 return reply.view('index', {
                     title: 'test',
