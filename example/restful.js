@@ -1,11 +1,15 @@
 var Hapi = require('hapi');
 
-var server = Hapi.createServer('127.0.0.1', 8000);
+var server = new Hapi.Server();
+server.connection({ host: '127.0.0.1', port: 8000 });
 
 // Add Crumb plugin
 
-server.pack.register({ plugin: require('../'), options: { restful: true } }, function(err) {
-    if (err) throw err;
+server.register({ register: require('../'), options: { restful: true } }, function (err) {
+
+    if (err) {
+        throw err;
+    }
 });
 
 server.route([
@@ -15,9 +19,10 @@ server.route([
     {
         method: 'GET',
         path: '/generate',
-        handler: function(request) {
+        handler: function (request, reply) {
+
             // return crumb if desired
-            request.reply('{ "crumb": ' + request.plugins.crumb + ' }');
+            return reply('{ "crumb": ' + request.plugins.crumb + ' }');
         }
     },
 
@@ -26,13 +31,14 @@ server.route([
     {
         method: 'PUT',
         path: '/crumbed',
-        handler: function(request) {
-            request.reply('Crumb route');
-        }
-    },
+        handler: function (request, reply) {
 
+            return reply('Crumb route');
+        }
+    }
 ]);
 
-server.start(function() {
+server.start(function () {
+
     console.log('Example restful server running at:', server.info.uri);
 });
