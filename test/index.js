@@ -393,7 +393,7 @@ describe('Crumb', function () {
             expect(err).to.not.exist();
 
             var headers = {};
-            headers.host = 'http://localhost:80';
+            headers.host = 'localhost:80';
 
             server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
@@ -443,7 +443,7 @@ describe('Crumb', function () {
 
             expect(err).to.not.exist();
 
-            server.inject({ method: 'GET', url: '/1', headers: { host: 'https://localhost:443' } }, function (res) {
+            server.inject({ method: 'GET', url: '/1', headers: { host: 'localhost:443' } }, function (res) {
 
                 var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
