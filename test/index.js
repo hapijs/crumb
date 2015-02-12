@@ -160,7 +160,7 @@ describe('Crumb', function () {
                                             expect(cookie).to.contain('crumb');
 
                                             var headers = {};
-                                            headers.origin = '127.0.0.1';
+                                            headers.origin = 'http://127.0.0.1';
 
                                             server.inject({method: 'GET', url: '/1', headers: headers}, function(res) {
 
@@ -404,7 +404,7 @@ describe('Crumb', function () {
 
                 server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                    headers.origin = '127.0.0.1';
+                    headers.origin = 'http://127.0.0.1';
 
                     var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
@@ -469,23 +469,23 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['127.0.0.1']} }, function (err) {
+        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1']} }, function (err) {
             expect(err).to.not.exist();
             var headers = {};
-            headers.origin = '127.0.0.1';
+            headers.origin = 'http://127.0.0.1';
             server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
-                headers.origin = '127.0.0.2';
+                headers.origin = 'http://127.0.0.2';
 
                 server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                     var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
 
-                    headers.origin = '127.0.0.1:2000';
+                    headers.origin = 'http://127.0.0.1:2000';
 
                     server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
@@ -510,7 +510,7 @@ describe('Crumb', function () {
     it('does set crumb cookie if allowOrigins not set and CORS enabled with server.settings.cors.origin set', function (done) {
 
         var server = new Hapi.Server();
-        server.connection({ host: 'localhost', port: 80, routes: { cors: { origin: ['127.0.0.1'] } } });
+        server.connection({ host: 'localhost', port: 80, routes: { cors: { origin: ['http://127.0.0.1'] } } });
         server.route([
             {
                 method: 'GET', path: '/1', handler: function (request, reply) {
@@ -522,20 +522,20 @@ describe('Crumb', function () {
         server.register({ register: Crumb, options: null }, function (err) {
             expect(err).to.not.exist();
             var headers = {};
-            headers.origin = '127.0.0.1';
+            headers.origin = 'http://127.0.0.1';
             server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
-                headers.origin = '127.0.0.2';
+                headers.origin = 'http://127.0.0.2';
 
                 server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                     var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
 
-                    headers.origin = '127.0.0.1:2000';
+                    headers.origin = 'http://127.0.0.1:2000';
 
                     server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
@@ -573,7 +573,7 @@ describe('Crumb', function () {
         server.register({ register: Crumb, options: null }, function (err) {
             expect(err).to.not.exist();
             var headers = {};
-            headers.origin = '127.0.0.1';
+            headers.origin = 'http://127.0.0.1';
             server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
@@ -596,22 +596,22 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['127.0.0.1:2000']} }, function (err) {
+        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:2000']} }, function (err) {
             expect(err).to.not.exist();
             var headers = {};
-            headers.origin = '127.0.0.1:2000';
+            headers.origin = 'http://127.0.0.1:2000';
             server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
-                headers.origin = '127.0.0.1:1000';
+                headers.origin = 'http://127.0.0.1:1000';
                 server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                     var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
 
-                    headers.origin = '127.0.0.1';
+                    headers.origin = 'http://127.0.0.1';
                     server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                         var header = res.headers['set-cookie'];
@@ -636,22 +636,22 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['127.0.0.1:*', '*.test.com']} }, function (err) {
+        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:*', 'http://*.test.com']} }, function (err) {
             expect(err).to.not.exist();
             var headers = {};
-            headers.origin = '127.0.0.1:2000';
+            headers.origin = 'http://127.0.0.1:2000';
             server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
-                headers.origin = 'foo.test.com';
+                headers.origin = 'http://*.test.com';
                 server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                    //expect(header[0]).to.contain('crumb');
+                    var header = res.headers['set-cookie'];
                     expect(header[0]).to.contain('crumb');
 
-                    headers.origin = 'foo.tesc.com';
+                    headers.origin = 'http://foo.tesc.com';
 
                     server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
