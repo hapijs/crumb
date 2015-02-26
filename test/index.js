@@ -258,6 +258,25 @@ describe('Crumb', function () {
         });
     });
 
+    it('should fail to register with bad options', function (done) {
+
+        var server = new Hapi.Server();
+        server.connection();
+
+        server.register({
+            register: Crumb,
+            options: {
+                foo: 'bar'
+            }
+        }, function(err) {
+
+            expect(err).to.exist();
+            expect(err.name).to.equal('ValidationError');
+            expect(err.message).to.equal('foo is not allowed');
+            done();
+        });
+    });
+
     it('route uses crumb when route.config.plugins.crumb set to true and autoGenerate set to false', function (done) {
 
         var server = new Hapi.Server();
@@ -375,11 +394,12 @@ describe('Crumb', function () {
         var server = new Hapi.Server();
         server.connection();
 
-        expect(function () {
-
-            server.register({ register: Crumb, options: { allowOrigins: ['*'] } }, function (err) {});
-        }).to.throw(/Invalid crumb options/);
-        done();
+        server.register({ register: Crumb, options: { allowOrigins: ['*'] } }, function (err) {
+            expect(err).to.exist();
+            expect(err.name).to.equal('ValidationError');
+            expect(err.message).to.equal('allowOrigins position 0 contains an excluded value');
+            done();
+        });
     });
 
     it('does not set crumb cookie insecurely', function (done) {
