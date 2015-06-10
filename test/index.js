@@ -272,7 +272,7 @@ describe('Crumb', function () {
 
             expect(err).to.exist();
             expect(err.name).to.equal('ValidationError');
-            expect(err.message).to.equal('foo is not allowed');
+            expect(err.message).to.equal('"foo" is not allowed');
             done();
         });
     });
@@ -397,7 +397,7 @@ describe('Crumb', function () {
         server.register({ register: Crumb, options: { allowOrigins: ['*'] } }, function (err) {
             expect(err).to.exist();
             expect(err.name).to.equal('ValidationError');
-            expect(err.message).to.equal('allowOrigins position 0 contains an excluded value');
+            expect(err.message).to.equal('child "allowOrigins" fails because ["allowOrigins" at position 0 contains an excluded value]');
             done();
         });
     });
