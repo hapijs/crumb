@@ -121,9 +121,9 @@ describe('Crumb', function () {
 
                                 var TestStream = function (opt) {
 
-                                      Stream.Readable.call(this, opt);
-                                      this._max = 2;
-                                      this._index = 1;
+                                    Stream.Readable.call(this, opt);
+                                    this._max = 2;
+                                    this._index = 1;
                                 };
 
                                 Hoek.inherits(TestStream, Stream.Readable);
@@ -145,7 +145,7 @@ describe('Crumb', function () {
 
                                     expect(res.statusCode).to.equal(403);
 
-                                    server.inject({method: 'GET', url: '/6'}, function(res) {
+                                    server.inject({ method: 'GET', url: '/6' }, function (res) {
 
                                         var header = res.headers['set-cookie'];
                                         expect(header.length).to.equal(1);
@@ -154,7 +154,7 @@ describe('Crumb', function () {
                                         var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
                                         expect(res.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                                        server.inject({method: 'GET', url: '/7'}, function(res) {
+                                        server.inject({ method: 'GET', url: '/7' }, function (res) {
 
                                             var cookie = res.headers['set-cookie'].toString();
                                             expect(cookie).to.contain('crumb');
@@ -162,7 +162,7 @@ describe('Crumb', function () {
                                             var headers = {};
                                             headers.origin = 'http://127.0.0.1';
 
-                                            server.inject({method: 'GET', url: '/1', headers: headers}, function(res) {
+                                            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                                                 var cookie = res.headers['set-cookie'].toString();
                                                 expect(cookie).to.contain('crumb');
@@ -268,7 +268,7 @@ describe('Crumb', function () {
             options: {
                 foo: 'bar'
             }
-        }, function(err) {
+        }, function (err) {
 
             expect(err).to.exist();
             expect(err.name).to.equal('ValidationError');
@@ -301,7 +301,7 @@ describe('Crumb', function () {
                 }
             },
             {
-                method: 'GET', path: '/2', config: { plugins: { crumb: true } }, handler: function(request, reply) {
+                method: 'GET', path: '/2', config: { plugins: { crumb: true } }, handler: function (request, reply) {
 
                     var crumb = request.plugins.crumb;
 
@@ -316,7 +316,7 @@ describe('Crumb', function () {
 
             server.inject({ method: 'GET', url: '/1' }, function (res) {
 
-                server.inject({ method: 'GET', url: '/2'}, function (res) {
+                server.inject({ method: 'GET', url: '/2' }, function (res) {
 
                     var header = res.headers['set-cookie'];
                     expect(header.length).to.equal(1);
@@ -346,7 +346,7 @@ describe('Crumb', function () {
             return request.headers['x-api-token'] === 'test';
         };
 
-        server.register({ register: Crumb, options: { skip: skip }}, function (err) {
+        server.register({ register: Crumb, options: { skip: skip } }, function (err) {
 
             expect(err).to.not.exist();
             var headers = {};
@@ -376,7 +376,8 @@ describe('Crumb', function () {
 
         var skip = true;
 
-        server.register({ register: Crumb, options: { skip: skip }}, function (err) {
+        server.register({ register: Crumb, options: { skip: skip } }, function (err) {
+
             expect(err).to.not.exist();
             var headers = {};
             headers['X-API-Token'] = 'not-test';
@@ -395,6 +396,7 @@ describe('Crumb', function () {
         server.connection();
 
         server.register({ register: Crumb, options: { allowOrigins: ['*'] } }, function (err) {
+
             expect(err).to.exist();
             expect(err.name).to.equal('ValidationError');
             expect(err.message).to.equal('child "allowOrigins" fails because ["allowOrigins" at position 0 contains an excluded value]');
@@ -406,7 +408,10 @@ describe('Crumb', function () {
 
         var server = new Hapi.Server();
         server.connection({ host: 'localhost', port: 80, routes: { cors: true } });
-        server.route({ method: 'GET', path: '/1', handler: function (request, reply) { return reply('test'); } });
+        server.route({ method: 'GET', path: '/1', handler: function (request, reply) {
+
+            return reply('test');
+        } });
 
         server.register({ register: Crumb, options: null }, function (err) {
 
@@ -489,7 +494,8 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1']} }, function (err) {
+        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1'] } }, function (err) {
+
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1';
@@ -540,6 +546,7 @@ describe('Crumb', function () {
             }
         ]);
         server.register({ register: Crumb, options: null }, function (err) {
+
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1';
@@ -591,6 +598,7 @@ describe('Crumb', function () {
         ]);
 
         server.register({ register: Crumb, options: null }, function (err) {
+
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1';
@@ -616,7 +624,8 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:2000']} }, function (err) {
+        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:2000'] } }, function (err) {
+
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1:2000';
@@ -656,7 +665,8 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:*', 'http://*.test.com']} }, function (err) {
+        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:*', 'http://*.test.com'] } }, function (err) {
+
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1:2000';
