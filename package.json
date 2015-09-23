@@ -6,7 +6,7 @@
   "bugs": {
     "url": "https://github.com/hapijs/crumb/issues"
   },
-  "main": "index",
+  "main": "lib/index.js",
   "keywords": [
     "hapi",
     "plugin",
@@ -33,7 +33,8 @@
     "lab": "5.x.x"
   },
   "scripts": {
-    "test": "make test-cov"
+    "test": "lab -r console -t 100 -a code -L",
+    "test-cov-html": "lab -r html -o coverage.html -a code -L"
   },
   "licenses": [
     {
