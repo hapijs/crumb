@@ -8,7 +8,7 @@ After the initial reply to your report, the security team will endeavor to keep 
 If you have not received a reply to your email within 48 hours, or have not heard from the security team for the  past five days, there are a few steps you can take:
 
 - Email [Marcus Stong](mailto:stongo@gmail.com)
-- Give the Spumko team a heads up on IRC in #hapi on irc.freenode.net
+- Give the hapi contributors a heads up on IRC in #hapi on irc.freenode.net
 
 Thank you for taking the time to disclose the issue to us. Your efforts and responsible disclosure are greatly appreciated!
 
