@@ -305,6 +305,7 @@ describe('Crumb', function () {
 
                     var crumb = request.plugins.crumb;
 
+                    expect(crumb).to.exist();
                     return reply('hola');
                 }
             }
@@ -321,6 +322,7 @@ describe('Crumb', function () {
                     var header = res2.headers['set-cookie'];
                     expect(header.length).to.equal(1);
                     var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+                    expect(cookie).to.exist();
 
                     done();
                 });
