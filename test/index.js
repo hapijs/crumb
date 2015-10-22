@@ -19,6 +19,7 @@ var lab = exports.lab = Lab.script();
 var describe = lab.describe;
 var it = lab.it;
 var expect = Code.expect;
+var vision = require('vision');
 
 
 describe('Crumb', function () {
@@ -28,12 +29,12 @@ describe('Crumb', function () {
         var server = new Hapi.Server();
         server.connection();
 
-        server.views({
+        var viewOptions = {
             path: __dirname + '/templates',
             engines: {
                 html: require('handlebars')
             }
-        });
+        };
 
         server.route([
             {
@@ -90,9 +91,12 @@ describe('Crumb', function () {
             }
         ]);
 
-        server.register({ register: Crumb, options: { cookieOptions: { isSecure: true } } }, function (err) {
+        server.register([{ register: vision }, { register: Crumb, options: { cookieOptions: { isSecure: true } } }], function (err) {
 
             expect(err).to.not.exist();
+
+            server.views(viewOptions);
+
             server.inject({ method: 'GET', url: '/1' }, function (res) {
 
                 expect(res.statusCode).to.equal(200);
@@ -103,21 +107,21 @@ describe('Crumb', function () {
                 var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
                 expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, function (res1) {
+                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, function (res) {
 
-                    expect(res1.result).to.equal('valid');
+                    expect(res.result).to.equal('valid');
 
-                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "x' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, function (res2) {
+                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "x' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, function (res) {
 
-                        expect(res2.statusCode).to.equal(403);
+                        expect(res.statusCode).to.equal(403);
 
-                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, function (res3) {
+                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, function (res) {
 
-                            expect(res3.statusCode).to.equal(403);
+                            expect(res.statusCode).to.equal(403);
 
-                            server.inject({ method: 'GET', url: '/4' }, function (res4) {
+                            server.inject({ method: 'GET', url: '/4' }, function (res) {
 
-                                expect(res4.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
+                                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
 
                                 var TestStream = function (opt) {
 
@@ -141,30 +145,30 @@ describe('Crumb', function () {
                                     }
                                 };
 
-                                server.inject({ method: 'POST', url: '/5', payload: new TestStream(), headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename="test.txt"' }, simulate: { end: true } }, function (res5) {
+                                server.inject({ method: 'POST', url: '/5', payload: new TestStream(), headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename="test.txt"' }, simulate: { end: true } }, function (res) {
 
-                                    expect(res5.statusCode).to.equal(403);
+                                    expect(res.statusCode).to.equal(403);
 
-                                    server.inject({ method: 'GET', url: '/6' }, function (res6) {
+                                    server.inject({ method: 'GET', url: '/6' }, function (res) {
 
-                                        header = res6.headers['set-cookie'];
+                                        var header = res.headers['set-cookie'];
                                         expect(header.length).to.equal(1);
                                         expect(header[0]).to.contain('Secure');
 
-                                        cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-                                        expect(res6.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie[1] + '</h2></div></body></html>');
+                                        var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+                                        expect(res.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                                        server.inject({ method: 'GET', url: '/7' }, function (res7) {
+                                        server.inject({ method: 'GET', url: '/7' }, function (res) {
 
-                                            cookie = res7.headers['set-cookie'].toString();
+                                            var cookie = res.headers['set-cookie'].toString();
                                             expect(cookie).to.contain('crumb');
 
                                             var headers = {};
                                             headers.origin = 'http://127.0.0.1';
 
-                                            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res8) {
+                                            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                                                cookie = res8.headers['set-cookie'].toString();
+                                                var cookie = res.headers['set-cookie'].toString();
                                                 expect(cookie).to.contain('crumb');
 
                                                 done();
@@ -185,12 +189,12 @@ describe('Crumb', function () {
         var server = new Hapi.Server();
         server.connection();
 
-        server.views({
+        var viewOptions = {
             path: __dirname + '/templates',
             engines: {
                 html: require('handlebars')
             }
-        });
+        };
 
         server.route({
             method: 'GET', path: '/1', handler: function (request, reply) {
@@ -205,9 +209,12 @@ describe('Crumb', function () {
             }
         });
 
-        server.register({ register: Crumb, options: { cookieOptions: { isSecure: true }, addToViewContext: false } }, function (err) {
+        server.register([{ register: vision }, { register: Crumb, options: { cookieOptions: { isSecure: true }, addToViewContext: false } }], function (err) {
 
             expect(err).to.not.exist();
+
+            server.views(viewOptions);
+
             server.inject({ method: 'GET', url: '/1' }, function (res) {
 
                 expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
@@ -221,12 +228,12 @@ describe('Crumb', function () {
         var server = new Hapi.Server();
         server.connection();
 
-        server.views({
+        var viewOptions = {
             path: __dirname + '/templates',
             engines: {
                 html: require('handlebars')
             }
-        });
+        };
 
         server.route({
             method: 'GET', path: '/1', handler: function (request, reply) {
@@ -241,9 +248,12 @@ describe('Crumb', function () {
             }
         });
 
-        server.register({ register: Crumb, options: null }, function (err) {
+        server.register([{ register: vision }, { register: Crumb, options: null }], function (err) {
 
             expect(err).to.not.exist();
+
+            server.views(viewOptions);
+
 
             server.inject({ method: 'GET', url: '/1' }, function (res) {
 
@@ -282,12 +292,12 @@ describe('Crumb', function () {
         var server = new Hapi.Server();
         server.connection();
 
-        server.views({
+        var viewOptions = {
             path: __dirname + '/templates',
             engines: {
                 html: require('handlebars')
             }
-        });
+        };
 
         server.route([
             {
@@ -305,24 +315,25 @@ describe('Crumb', function () {
 
                     var crumb = request.plugins.crumb;
 
-                    expect(crumb).to.exist();
                     return reply('hola');
                 }
             }
         ]);
 
-        server.register({ register: Crumb, options: { autoGenerate: false } }, function (err) {
+        server.register([{ register: vision }, { register: Crumb, options: { autoGenerate: false } }], function (err) {
 
             expect(err).to.not.exist();
 
-            server.inject({ method: 'GET', url: '/1' }, function (res1) {
+            server.views(viewOptions);
 
-                server.inject({ method: 'GET', url: '/2' }, function (res2) {
 
-                    var header = res2.headers['set-cookie'];
+            server.inject({ method: 'GET', url: '/1' }, function (res) {
+
+                server.inject({ method: 'GET', url: '/2' }, function (res) {
+
+                    var header = res.headers['set-cookie'];
                     expect(header.length).to.equal(1);
                     var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-                    expect(cookie).to.exist();
 
                     done();
                 });
@@ -348,7 +359,7 @@ describe('Crumb', function () {
             return request.headers['x-api-token'] === 'test';
         };
 
-        server.register({ register: Crumb, options: { skip: skip } }, function (err) {
+        server.register([{ register: Crumb, options: { skip: skip } }], function (err) {
 
             expect(err).to.not.exist();
             var headers = {};
@@ -378,9 +389,19 @@ describe('Crumb', function () {
 
         var skip = true;
 
-        server.register({ register: Crumb, options: { skip: skip } }, function (err) {
+        var viewOptions = {
+            path: __dirname + '/templates',
+            engines: {
+                html: require('handlebars')
+            }
+        };
+
+        server.register([{ register: vision }, { register: Crumb }], function (err) {
 
             expect(err).to.not.exist();
+
+            server.views(viewOptions);
+
             var headers = {};
             headers['X-API-Token'] = 'not-test';
             server.inject({ method: 'POST', url: '/1', headers: headers }, function (res) {
@@ -397,7 +418,7 @@ describe('Crumb', function () {
         var server = new Hapi.Server();
         server.connection();
 
-        server.register({ register: Crumb, options: { allowOrigins: ['*'] } }, function (err) {
+        server.register([{ register: Crumb, options: { allowOrigins: ['*'] } }], function (err) {
 
             expect(err).to.exist();
             expect(err.name).to.equal('ValidationError');
@@ -415,25 +436,25 @@ describe('Crumb', function () {
             return reply('test');
         } });
 
-        server.register({ register: Crumb, options: null }, function (err) {
+        server.register([{ register: Crumb, options: null }], function (err) {
 
             expect(err).to.not.exist();
 
             var headers = {};
             headers.host = 'localhost:80';
 
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res1) {
+            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                var header = res1.headers['set-cookie'];
+                var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
                 delete headers.host;
 
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res2) {
+                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                     headers.origin = 'http://127.0.0.1';
 
-                    header = res2.headers['set-cookie'];
+                    var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
 
                     done();
@@ -466,18 +487,18 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: null }, function (err) {
+        server.register([{ register: Crumb, options: null }], function (err) {
 
             expect(err).to.not.exist();
 
-            server.inject({ method: 'GET', url: '/1', headers: { host: 'localhost:443' } }, function (res1) {
+            server.inject({ method: 'GET', url: '/1', headers: { host: 'localhost:443' } }, function (res) {
 
-                var header = res1.headers['set-cookie'];
+                var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
-                server.inject({ method: 'GET', url: '/1' }, function (res2) {
+                server.inject({ method: 'GET', url: '/1' }, function (res) {
 
-                    expect(res2.headers['set-cookie']).to.not.exist();
+                    expect(res.headers['set-cookie']).to.not.exist();
                     done();
                 });
             });
@@ -496,35 +517,35 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1'] } }, function (err) {
+        server.register([{ register: Crumb, options: { allowOrigins: ['http://127.0.0.1'] } }], function (err) {
 
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res1) {
+            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                var header = res1.headers['set-cookie'];
+                var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
                 headers.origin = 'http://127.0.0.2';
 
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res2) {
+                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                    header = res2.headers['set-cookie'];
+                    var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
 
                     headers.origin = 'http://127.0.0.1:2000';
 
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res3) {
+                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                        header = res3.headers['set-cookie'];
+                        var header = res.headers['set-cookie'];
                         expect(header).to.not.exist();
 
                         delete headers.origin;
 
-                        server.inject({ method: 'GET', url: '/1', headers: headers }, function (res4) {
+                        server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                            header = res4.headers['set-cookie'];
+                            var header = res.headers['set-cookie'];
                             expect(header).to.not.exist();
 
                             done();
@@ -547,35 +568,35 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: null }, function (err) {
+        server.register([{ register: Crumb, options: null }], function (err) {
 
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res1) {
+            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                var header = res1.headers['set-cookie'];
+                var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
                 headers.origin = 'http://127.0.0.2';
 
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res2) {
+                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                    header = res2.headers['set-cookie'];
+                    var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
 
                     headers.origin = 'http://127.0.0.1:2000';
 
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res3) {
+                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                        header = res3.headers['set-cookie'];
+                        var header = res.headers['set-cookie'];
                         expect(header).to.not.exist();
 
                         delete headers.origin;
 
-                        server.inject({ method: 'GET', url: '/1', headers: headers }, function (res4) {
+                        server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                            header = res4.headers['set-cookie'];
+                            var header = res.headers['set-cookie'];
                             expect(header).to.not.exist();
 
                             done();
@@ -599,7 +620,7 @@ describe('Crumb', function () {
             }
         ]);
 
-        server.register({ register: Crumb, options: null }, function (err) {
+        server.register([{ register: Crumb, options: null }], function (err) {
 
             expect(err).to.not.exist();
             var headers = {};
@@ -626,26 +647,26 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:2000'] } }, function (err) {
+        server.register([{ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:2000'] } }], function (err) {
 
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1:2000';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res1) {
+            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                var header = res1.headers['set-cookie'];
+                var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
                 headers.origin = 'http://127.0.0.1:1000';
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res2) {
+                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                    header = res2.headers['set-cookie'];
+                    var header = res.headers['set-cookie'];
                     expect(header).to.not.exist();
 
                     headers.origin = 'http://127.0.0.1';
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res3) {
+                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                        header = res3.headers['set-cookie'];
+                        var header = res.headers['set-cookie'];
                         expect(header).to.not.exist();
 
                         done();
@@ -667,27 +688,27 @@ describe('Crumb', function () {
                 }
             }
         ]);
-        server.register({ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:*', 'http://*.test.com'] } }, function (err) {
+        server.register([{ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:*', 'http://*.test.com'] } }], function (err) {
 
             expect(err).to.not.exist();
             var headers = {};
             headers.origin = 'http://127.0.0.1:2000';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res1) {
+            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                var header = res1.headers['set-cookie'];
+                var header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
                 headers.origin = 'http://*.test.com';
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res2) {
+                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                    header = res2.headers['set-cookie'];
+                    var header = res.headers['set-cookie'];
                     expect(header[0]).to.contain('crumb');
 
                     headers.origin = 'http://foo.tesc.com';
 
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res3) {
+                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
-                        header = res3.headers['set-cookie'];
+                        var header = res.headers['set-cookie'];
                         expect(header).to.not.exist();
 
                         done();
@@ -701,12 +722,12 @@ describe('Crumb', function () {
         var server = new Hapi.Server();
         server.connection();
 
-        server.views({
+        var viewOptions = {
             path: __dirname + '/templates',
             engines: {
                 html: require('handlebars')
             }
-        });
+        };
 
         server.route([
             {
@@ -771,9 +792,12 @@ describe('Crumb', function () {
 
         ]);
 
-        server.register({ register: Crumb, options: { restful: true, cookieOptions: { isSecure: true } } }, function (err) {
+        server.register([{ register: vision }, { register: Crumb, options: { restful: true, cookieOptions: { isSecure: true } } }], function (err) {
 
             expect(err).to.not.exist();
+
+            server.views(viewOptions);
+
             server.inject({ method: 'GET', url: '/1' }, function (res) {
 
                 var header = res.headers['set-cookie'];
@@ -792,52 +816,52 @@ describe('Crumb', function () {
 
                 expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: validHeader }, function (res1) {
+                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: validHeader }, function (res) {
 
-                    expect(res1.result).to.equal('valid');
+                    expect(res.result).to.equal('valid');
 
-                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: invalidHeader }, function (res2) {
+                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: invalidHeader }, function (res) {
 
-                        expect(res2.statusCode).to.equal(403);
+                        expect(res.statusCode).to.equal(403);
 
-                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, function (res3) {
+                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, function (res) {
 
-                            expect(res3.statusCode).to.equal(403);
+                            expect(res.statusCode).to.equal(403);
 
-                            server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: validHeader }, function (res4) {
+                            server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: validHeader }, function (res) {
 
-                                expect(res4.result).to.equal('valid');
+                                expect(res.result).to.equal('valid');
 
-                                server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: invalidHeader }, function (res5) {
+                                server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: invalidHeader }, function (res) {
 
-                                    expect(res5.statusCode).to.equal(403);
+                                    expect(res.statusCode).to.equal(403);
 
-                                    server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: validHeader }, function (res6) {
+                                    server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: validHeader }, function (res) {
 
-                                        expect(res6.result).to.equal('valid');
+                                        expect(res.result).to.equal('valid');
 
-                                        server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: invalidHeader }, function (res7) {
+                                        server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: invalidHeader }, function (res) {
 
-                                            expect(res7.statusCode).to.equal(403);
+                                            expect(res.statusCode).to.equal(403);
 
-                                            server.inject({ method: 'DELETE', url: '/6', headers: validHeader }, function (res8) {
+                                            server.inject({ method: 'DELETE', url: '/6', headers: validHeader }, function (res) {
 
-                                                expect(res8.result).to.equal('valid');
+                                                expect(res.result).to.equal('valid');
 
-                                                server.inject({ method: 'DELETE', url: '/6', headers: invalidHeader }, function (res9) {
+                                                server.inject({ method: 'DELETE', url: '/6', headers: invalidHeader }, function (res) {
 
-                                                    expect(res9.statusCode).to.equal(403);
+                                                    expect(res.statusCode).to.equal(403);
 
-                                                    server.inject({ method: 'POST', url: '/7', payload: '{ "key": "value" }' }, function (res10) {
+                                                    server.inject({ method: 'POST', url: '/7', payload: '{ "key": "value" }' }, function (res) {
 
-                                                        expect(res10.result).to.equal('valid');
+                                                        expect(res.result).to.equal('valid');
 
                                                         var payload = { key: 'value', crumb: cookie[1] };
 
                                                         delete validHeader['x-csrf-token'];
-                                                        server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader }, function (res11) {
+                                                        server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader }, function (res) {
 
-                                                            expect(res11.result).to.equal('valid');
+                                                            expect(res.result).to.equal('valid');
                                                             done();
                                                         });
                                                     });
