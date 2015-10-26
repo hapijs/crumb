@@ -34,7 +34,7 @@
     "vision": "^3.0.0"
   },
   "scripts": {
-    "test": "lab -r console -t 100 -a code -L ",
+    "test": "lab -r console -t 100 -a code -L",
     "test-cov-html": "lab -r html -o coverage.html -a code -L"
   },
   "licenses": [
