@@ -1,5 +1,5 @@
 // Load modules
-
+/*eslint "hapi/no-shadow-relaxed": 0*/
 var Stream = require('stream');
 var Code = require('code');
 var Crumb = require('../');
