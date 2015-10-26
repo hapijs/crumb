@@ -313,8 +313,6 @@ describe('Crumb', function () {
             {
                 method: 'GET', path: '/2', config: { plugins: { crumb: true } }, handler: function (request, reply) {
 
-                    var crumb = request.plugins.crumb;
-
                     return reply('hola');
                 }
             }
@@ -327,16 +325,40 @@ describe('Crumb', function () {
             server.views(viewOptions);
 
 
-            server.inject({ method: 'GET', url: '/1' }, function (res) {
+            server.inject({ method: 'GET', url: '/1' }, function () {
 
                 server.inject({ method: 'GET', url: '/2' }, function (res) {
 
                     var header = res.headers['set-cookie'];
                     expect(header.length).to.equal(1);
-                    var cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-
                     done();
                 });
+            });
+        });
+    });
+
+    it('fails validation when no payload provided and not using restful mode', function (done) {
+
+        var server = new Hapi.Server();
+        server.connection();
+        server.route([
+            {
+                method: 'POST', path: '/1', handler: function (request, reply) {
+
+                    return reply('test');
+                }
+            }
+        ]);
+
+        server.register([{ register: Crumb }], function (err) {
+
+            expect(err).to.not.exist();
+            var headers = {};
+            headers['X-API-Token'] = 'test';
+            server.inject({ method: 'POST', url: '/1', headers: headers }, function (res) {
+
+                expect(res.statusCode).to.equal(403);
+                done();
             });
         });
     });
@@ -374,7 +396,7 @@ describe('Crumb', function () {
         });
     });
 
-    it('ensures crumb validation when "skip" option is not a function', function (done) {
+    it('ensures crumb "skip" option is a function', function (done) {
 
         var server = new Hapi.Server();
         server.connection();
@@ -389,27 +411,10 @@ describe('Crumb', function () {
 
         var skip = true;
 
-        var viewOptions = {
-            path: __dirname + '/templates',
-            engines: {
-                html: require('handlebars')
-            }
-        };
+        server.register([{ register: vision }, { register: Crumb, options: { skip: skip } }], function (err) {
 
-        server.register([{ register: vision }, { register: Crumb }], function (err) {
-
-            expect(err).to.not.exist();
-
-            server.views(viewOptions);
-
-            var headers = {};
-            headers['X-API-Token'] = 'not-test';
-            server.inject({ method: 'POST', url: '/1', headers: headers }, function (res) {
-
-                expect(res.statusCode).to.equal(403);
-
-                done();
-            });
+            expect(err).to.exist();
+            done();
         });
     });
 
