@@ -37,10 +37,5 @@
     "test": "lab -r console -t 100 -a code -L",
     "test-cov-html": "lab -r html -o coverage.html -a code -L"
   },
-  "licenses": [
-    {
-      "type": "BSD",
-      "url": "http://github.com/hapijs/crumb/raw/master/LICENSE"
-    }
-  ]
+  "license": "BSD-3-Clause"
 }
