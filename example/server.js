@@ -1,6 +1,8 @@
-var Hapi = require('hapi');
+'use strict';
 
-var server = new Hapi.Server();
+const Hapi = require('hapi');
+
+const server = new Hapi.Server();
 server.connection({ host: '127.0.0.1', port: 8000 });
 
 server.views({
@@ -10,7 +12,7 @@ server.views({
     }
 });
 
-server.register({ register: require('../'), options: { cookieOptions: { isSecure: false } } }, function (err) {
+server.register({ register: require('../'), options: { cookieOptions: { isSecure: false } } }, (err) => {
 
     if (err) {
         throw err;
@@ -35,7 +37,7 @@ server.route({
     }
 });
 
-server.start(function () {
+server.start(() => {
 
     console.log('Example server running at:', server.info.uri);
 });

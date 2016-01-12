@@ -19,7 +19,7 @@ var lab = exports.lab = Lab.script();
 var describe = lab.describe;
 var it = lab.it;
 var expect = Code.expect;
-var vision = require('vision');
+var Vision = require('vision');
 
 
 describe('Crumb', function () {
@@ -91,7 +91,7 @@ describe('Crumb', function () {
             }
         ]);
 
-        server.register([{ register: vision }, { register: Crumb, options: { cookieOptions: { isSecure: true } } }], function (err) {
+        server.register([{ register: Vision }, { register: Crumb, options: { cookieOptions: { isSecure: true } } }], function (err) {
 
             expect(err).to.not.exist();
 
@@ -209,7 +209,7 @@ describe('Crumb', function () {
             }
         });
 
-        server.register([{ register: vision }, { register: Crumb, options: { cookieOptions: { isSecure: true }, addToViewContext: false } }], function (err) {
+        server.register([{ register: Vision }, { register: Crumb, options: { cookieOptions: { isSecure: true }, addToViewContext: false } }], function (err) {
 
             expect(err).to.not.exist();
 
@@ -248,7 +248,7 @@ describe('Crumb', function () {
             }
         });
 
-        server.register([{ register: vision }, { register: Crumb, options: null }], function (err) {
+        server.register([{ register: Vision }, { register: Crumb, options: null }], function (err) {
 
             expect(err).to.not.exist();
 
@@ -318,7 +318,7 @@ describe('Crumb', function () {
             }
         ]);
 
-        server.register([{ register: vision }, { register: Crumb, options: { autoGenerate: false } }], function (err) {
+        server.register([{ register: Vision }, { register: Crumb, options: { autoGenerate: false } }], function (err) {
 
             expect(err).to.not.exist();
 
@@ -411,23 +411,9 @@ describe('Crumb', function () {
 
         var skip = true;
 
-        server.register([{ register: vision }, { register: Crumb, options: { skip: skip } }], function (err) {
+        server.register([{ register: Vision }, { register: Crumb, options: { skip: skip } }], function (err) {
 
             expect(err).to.exist();
-            done();
-        });
-    });
-
-    it('does not allow "*" for allowOrigins setting', function (done) {
-
-        var server = new Hapi.Server();
-        server.connection();
-
-        server.register([{ register: Crumb, options: { allowOrigins: ['*'] } }], function (err) {
-
-            expect(err).to.exist();
-            expect(err.name).to.equal('ValidationError');
-            expect(err.message).to.equal('child "allowOrigins" fails because ["allowOrigins" at position 0 contains an excluded value]');
             done();
         });
     });
@@ -435,7 +421,7 @@ describe('Crumb', function () {
     it('does not set crumb cookie insecurely', function (done) {
 
         var server = new Hapi.Server();
-        server.connection({ host: 'localhost', port: 80, routes: { cors: true } });
+        server.connection({ host: 'localhost', port: 80, routes: { cors: { origin: ['localhost'] } } });
         server.route({ method: 'GET', path: '/1', handler: function (request, reply) {
 
             return reply('test');
@@ -451,6 +437,7 @@ describe('Crumb', function () {
             server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
 
                 var header = res.headers['set-cookie'];
+                console.log('res.headers:', res.headers);
                 expect(header[0]).to.contain('crumb');
 
                 delete headers.host;
@@ -510,218 +497,6 @@ describe('Crumb', function () {
         });
     });
 
-    it('does set crumb cookie if allowOrigins set and CORS enabled', function (done) {
-
-        var server = new Hapi.Server();
-        server.connection({ host: 'localhost', port: 80, routes: { cors: true } });
-        server.route([
-            {
-                method: 'GET', path: '/1', handler: function (request, reply) {
-
-                    return reply('test');
-                }
-            }
-        ]);
-        server.register([{ register: Crumb, options: { allowOrigins: ['http://127.0.0.1'] } }], function (err) {
-
-            expect(err).to.not.exist();
-            var headers = {};
-            headers.origin = 'http://127.0.0.1';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                var header = res.headers['set-cookie'];
-                expect(header[0]).to.contain('crumb');
-
-                headers.origin = 'http://127.0.0.2';
-
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                    var header = res.headers['set-cookie'];
-                    expect(header).to.not.exist();
-
-                    headers.origin = 'http://127.0.0.1:2000';
-
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                        var header = res.headers['set-cookie'];
-                        expect(header).to.not.exist();
-
-                        delete headers.origin;
-
-                        server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                            var header = res.headers['set-cookie'];
-                            expect(header).to.not.exist();
-
-                            done();
-                        });
-                    });
-                });
-            });
-        });
-    });
-
-    it('does set crumb cookie if allowOrigins not set and CORS enabled with server.settings.cors.origin set', function (done) {
-
-        var server = new Hapi.Server();
-        server.connection({ host: 'localhost', port: 80, routes: { cors: { origin: ['http://127.0.0.1'] } } });
-        server.route([
-            {
-                method: 'GET', path: '/1', handler: function (request, reply) {
-
-                    return reply('test');
-                }
-            }
-        ]);
-        server.register([{ register: Crumb, options: null }], function (err) {
-
-            expect(err).to.not.exist();
-            var headers = {};
-            headers.origin = 'http://127.0.0.1';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                var header = res.headers['set-cookie'];
-                expect(header[0]).to.contain('crumb');
-
-                headers.origin = 'http://127.0.0.2';
-
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                    var header = res.headers['set-cookie'];
-                    expect(header).to.not.exist();
-
-                    headers.origin = 'http://127.0.0.1:2000';
-
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                        var header = res.headers['set-cookie'];
-                        expect(header).to.not.exist();
-
-                        delete headers.origin;
-
-                        server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                            var header = res.headers['set-cookie'];
-                            expect(header).to.not.exist();
-
-                            done();
-                        });
-                    });
-                });
-            });
-        });
-    });
-
-    it('does not set crumb cookie if allowOrigins not set and CORS set to "*"', function (done) {
-
-        var server = new Hapi.Server();
-        server.connection({ host: 'localhost', port: 80, routes: { cors: { origin: ['*'] } } });
-        server.route([
-            {
-                method: 'GET', path: '/1', handler: function (request, reply) {
-
-                    return reply('test');
-                }
-            }
-        ]);
-
-        server.register([{ register: Crumb, options: null }], function (err) {
-
-            expect(err).to.not.exist();
-            var headers = {};
-            headers.origin = 'http://127.0.0.1';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                var header = res.headers['set-cookie'];
-                expect(header).to.not.exist();
-
-                done();
-            });
-        });
-    });
-
-    it('checks port for allowOrigins setting', function (done) {
-
-        var server = new Hapi.Server();
-        server.connection({ host: 'localhost', port: 80, routes: { cors: true } });
-        server.route([
-            {
-                method: 'GET', path: '/1', handler: function (request, reply) {
-
-                    return reply('test');
-                }
-            }
-        ]);
-        server.register([{ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:2000'] } }], function (err) {
-
-            expect(err).to.not.exist();
-            var headers = {};
-            headers.origin = 'http://127.0.0.1:2000';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                var header = res.headers['set-cookie'];
-                expect(header[0]).to.contain('crumb');
-
-                headers.origin = 'http://127.0.0.1:1000';
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                    var header = res.headers['set-cookie'];
-                    expect(header).to.not.exist();
-
-                    headers.origin = 'http://127.0.0.1';
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                        var header = res.headers['set-cookie'];
-                        expect(header).to.not.exist();
-
-                        done();
-                    });
-                });
-            });
-        });
-    });
-
-    it('parses wildcards in allowOrigins setting', function (done) {
-
-        var server = new Hapi.Server();
-        server.connection({ host: 'localhost', port: 80, routes: { cors: true } });
-        server.route([
-            {
-                method: 'GET', path: '/1', handler: function (request, reply) {
-
-                    return reply('test');
-                }
-            }
-        ]);
-        server.register([{ register: Crumb, options: { allowOrigins: ['http://127.0.0.1:*', 'http://*.test.com'] } }], function (err) {
-
-            expect(err).to.not.exist();
-            var headers = {};
-            headers.origin = 'http://127.0.0.1:2000';
-            server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                var header = res.headers['set-cookie'];
-                expect(header[0]).to.contain('crumb');
-
-                headers.origin = 'http://*.test.com';
-                server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                    var header = res.headers['set-cookie'];
-                    expect(header[0]).to.contain('crumb');
-
-                    headers.origin = 'http://foo.tesc.com';
-
-                    server.inject({ method: 'GET', url: '/1', headers: headers }, function (res) {
-
-                        var header = res.headers['set-cookie'];
-                        expect(header).to.not.exist();
-
-                        done();
-                    });
-                });
-            });
-        });
-    });
     it('validates crumb with X-CSRF-Token header', function (done) {
 
         var server = new Hapi.Server();
@@ -797,7 +572,7 @@ describe('Crumb', function () {
 
         ]);
 
-        server.register([{ register: vision }, { register: Crumb, options: { restful: true, cookieOptions: { isSecure: true } } }], function (err) {
+        server.register([{ register: Vision }, { register: Crumb, options: { restful: true, cookieOptions: { isSecure: true } } }], function (err) {
 
             expect(err).to.not.exist();
 
