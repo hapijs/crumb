@@ -109,21 +109,21 @@ describe('Crumb', () => {
                 const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
                 expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, (res) => {
+                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, (res2) => {
 
-                    expect(res.result).to.equal('valid');
+                    expect(res2.result).to.equal('valid');
 
-                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "x' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, (res) => {
+                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "x' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, (res3) => {
 
-                        expect(res.statusCode).to.equal(403);
+                        expect(res3.statusCode).to.equal(403);
 
-                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, (res) => {
+                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, (res4) => {
 
-                            expect(res.statusCode).to.equal(403);
+                            expect(res4.statusCode).to.equal(403);
 
-                            server.inject({ method: 'GET', url: '/4' }, (res) => {
+                            server.inject({ method: 'GET', url: '/4' }, (res5) => {
 
-                                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
+                                expect(res5.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
 
                                 const TestStream = function (opt) {
 
@@ -147,31 +147,31 @@ describe('Crumb', () => {
                                     }
                                 };
 
-                                server.inject({ method: 'POST', url: '/5', payload: new TestStream(), headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename="test.txt"' }, simulate: { end: true } }, (res) => {
+                                server.inject({ method: 'POST', url: '/5', payload: new TestStream(), headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename="test.txt"' }, simulate: { end: true } }, (res6) => {
 
-                                    expect(res.statusCode).to.equal(403);
+                                    expect(res6.statusCode).to.equal(403);
 
-                                    server.inject({ method: 'GET', url: '/6' }, (res) => {
+                                    server.inject({ method: 'GET', url: '/6' }, (res7) => {
 
-                                        const header = res.headers['set-cookie'];
-                                        expect(header.length).to.equal(1);
-                                        expect(header[0]).to.contain('Secure');
+                                        const header2 = res7.headers['set-cookie'];
+                                        expect(header2.length).to.equal(1);
+                                        expect(header2[0]).to.contain('Secure');
 
-                                        const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-                                        expect(res.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie[1] + '</h2></div></body></html>');
+                                        const cookie2 = header2[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+                                        expect(res7.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie2[1] + '</h2></div></body></html>');
 
-                                        server.inject({ method: 'GET', url: '/7' }, (res) => {
+                                        server.inject({ method: 'GET', url: '/7' }, (res8) => {
 
-                                            const cookie = res.headers['set-cookie'].toString();
-                                            expect(cookie).to.contain('crumb');
+                                            const cookie3 = res8.headers['set-cookie'].toString();
+                                            expect(cookie3).to.contain('crumb');
 
                                             const headers = {};
                                             headers.origin = 'http://127.0.0.1';
 
-                                            server.inject({ method: 'GET', url: '/1', headers: headers }, (res) => {
+                                            server.inject({ method: 'GET', url: '/1', headers: headers }, (res9) => {
 
-                                                const cookie = res.headers['set-cookie'].toString();
-                                                expect(cookie).to.contain('crumb');
+                                                const cookie4 = res9.headers['set-cookie'].toString();
+                                                expect(cookie4).to.contain('crumb');
 
                                                 done();
                                             });
@@ -450,24 +450,24 @@ describe('Crumb', () => {
 
                 headers.origin = 'http://localhost';
 
-                server.inject({ method: 'GET', url: '/2', headers: headers }, (res) => {
+                server.inject({ method: 'GET', url: '/2', headers: headers }, (res2) => {
 
-                    const header = res.headers['set-cookie'];
-                    expect(header[0]).to.contain('crumb');
+                    const header2 = res2.headers['set-cookie'];
+                    expect(header2[0]).to.contain('crumb');
 
                     headers.origin = 'http://127.0.0.1';
 
-                    server.inject({ method: 'GET', url: '/3', headers: headers }, (res) => {
+                    server.inject({ method: 'GET', url: '/3', headers: headers }, (res3) => {
 
-                        const header = res.headers['set-cookie'];
-                        expect(header[0]).to.contain('crumb');
+                        const header3 = res3.headers['set-cookie'];
+                        expect(header3[0]).to.contain('crumb');
 
                         headers.origin = 'http://badsite.com';
 
-                        server.inject({ method: 'GET', url: '/3', headers: headers }, (res) => {
+                        server.inject({ method: 'GET', url: '/3', headers: headers }, (res4) => {
 
-                            const header = res.headers['set-cookie'];
-                            expect(header).to.not.exist();
+                            const header4 = res4.headers['set-cookie'];
+                            expect(header4).to.not.exist();
 
                             done();
                         });
@@ -611,52 +611,52 @@ describe('Crumb', () => {
 
                 expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: validHeader }, (res) => {
+                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: validHeader }, (res2) => {
 
-                    expect(res.result).to.equal('valid');
+                    expect(res2.result).to.equal('valid');
 
-                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: invalidHeader }, (res) => {
+                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: invalidHeader }, (res3) => {
 
-                        expect(res.statusCode).to.equal(403);
+                        expect(res3.statusCode).to.equal(403);
 
-                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, (res) => {
+                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, (res4) => {
 
-                            expect(res.statusCode).to.equal(403);
+                            expect(res4.statusCode).to.equal(403);
 
-                            server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: validHeader }, (res) => {
+                            server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: validHeader }, (res5) => {
 
-                                expect(res.result).to.equal('valid');
+                                expect(res5.result).to.equal('valid');
 
-                                server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: invalidHeader }, (res) => {
+                                server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: invalidHeader }, (res6) => {
 
-                                    expect(res.statusCode).to.equal(403);
+                                    expect(res6.statusCode).to.equal(403);
 
-                                    server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: validHeader }, (res) => {
+                                    server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: validHeader }, (res7) => {
 
-                                        expect(res.result).to.equal('valid');
+                                        expect(res7.result).to.equal('valid');
 
-                                        server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: invalidHeader }, (res) => {
+                                        server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: invalidHeader }, (res8) => {
 
-                                            expect(res.statusCode).to.equal(403);
+                                            expect(res8.statusCode).to.equal(403);
 
-                                            server.inject({ method: 'DELETE', url: '/6', headers: validHeader }, (res) => {
+                                            server.inject({ method: 'DELETE', url: '/6', headers: validHeader }, (res9) => {
 
-                                                expect(res.result).to.equal('valid');
+                                                expect(res9.result).to.equal('valid');
 
-                                                server.inject({ method: 'DELETE', url: '/6', headers: invalidHeader }, (res) => {
+                                                server.inject({ method: 'DELETE', url: '/6', headers: invalidHeader }, (res10) => {
 
-                                                    expect(res.statusCode).to.equal(403);
+                                                    expect(res10.statusCode).to.equal(403);
 
-                                                    server.inject({ method: 'POST', url: '/7', payload: '{ "key": "value" }' }, (res) => {
+                                                    server.inject({ method: 'POST', url: '/7', payload: '{ "key": "value" }' }, (res11) => {
 
-                                                        expect(res.result).to.equal('valid');
+                                                        expect(res11.result).to.equal('valid');
 
                                                         const payload = { key: 'value', crumb: cookie[1] };
 
                                                         delete validHeader['x-csrf-token'];
-                                                        server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader }, (res) => {
+                                                        server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader }, (res12) => {
 
-                                                            expect(res.result).to.equal('valid');
+                                                            expect(res12.result).to.equal('valid');
                                                             done();
                                                         });
                                                     });
