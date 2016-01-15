@@ -1,11 +1,13 @@
-var Hapi = require('hapi');
+'use strict';
 
-var server = new Hapi.Server();
+const Hapi = require('hapi');
+
+const server = new Hapi.Server();
 server.connection({ host: '127.0.0.1', port: 8000 });
 
 // Add Crumb plugin
 
-server.register({ register: require('../'), options: { restful: true } }, function (err) {
+server.register({ register: require('../'), options: { restful: true } }, (err) => {
 
     if (err) {
         throw err;
@@ -38,7 +40,7 @@ server.route([
     }
 ]);
 
-server.start(function () {
+server.start(() => {
 
     console.log('Example restful server running at:', server.info.uri);
 });
