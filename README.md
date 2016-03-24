@@ -17,7 +17,7 @@ A crumb analogous to a web cookie is a unique electronic key which is shared bet
 
 In response, server api sends back the new crumb which should be sent back with the next ajax call.
 
-When a spammer tries simulate the ajax request calls, he/she will not be able to succeed because of the absence of the crumb. He will be able to detect what the crumb is and send back the same crumb the effect? YES he can, but we can take care of this by reducing the life time of the generated crumb.
+When a spammer tries simulate the ajax request calls, he/she will not be able to succeed because of the absence of the crumb. It is possible that the spammer will detect what the crumb is and send back the same crumb which defeats the purpose of having a crumb but, they are work arounds to prevent that as well.
 
 
 
