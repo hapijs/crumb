@@ -30,7 +30,7 @@ Additionally, some configuration can be passed on a per-route basis
 * 'source' - can be either 'payload' or 'query' specifying how the crumb will be sent in requests (defaults to payload)
 * 'restful' - an override for the server's 'restful' setting (defaults to match server setting)
 
-**What the heck is a crumb
+##What the heck is a crumb though?
 Let's say we allow users to post images on our forum. What if one of our users posted this image?
 ```
 <img src="http://foo.com/logout">
