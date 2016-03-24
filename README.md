@@ -19,6 +19,7 @@ In response, server api sends back the new crumb which should be sent back with 
 
 When a spammer tries simulate the ajax request calls, he/she will not be able to succeed because of the absence of the crumb. It is possible that the spammer will detect what the crumb is and send back the same crumb which defeats the purpose of having a crumb but, they are work arounds to prevent that as well.
 
+Most web application frameworks should have the capability to generate and validate crumbs to prevent hacking and security breaches of injected code.
 
 
 
