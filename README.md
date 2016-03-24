@@ -32,8 +32,9 @@ Additionally, some configuration can be passed on a per-route basis
 
 **What the heck is a crumb
 Let's say we allow users to post images on our forum. What if one of our users posted this image?
-
+```
 <img src="http://foo.com/logout">
+```
 Not really an image, true, but it will force the target URL to be retrieved by any random user who happens to browse that page -- using their browser credentials! From the webserver's perspective, there is no difference whatsoever between a real user initiated browser request and the above image URL retrieval.
 
 If our logout page was a simple HTTP GET that required no confirmation, every user who visited that page would immediately be logged out. That's XSRF in action. Not necessarily dangerous, but annoying. Not too difficult to envision much more destructive versions of this technique, is it?
