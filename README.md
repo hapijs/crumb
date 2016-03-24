@@ -12,6 +12,14 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
 
 **It is highly discouraged to have a production servers `cors.origin` setting set to "[\*]" or "true" with Crumb as it will leak the crumb token to potentially malicious sites**
 
+##What the heck is a crumb though?
+A crumb is a unique electronic key which is shared between server and client, and which have a short life time. But how are these useful? Suppose, in my group chat module, upon page load i generate a crumb whose life time is 30 minutes (tunable). Why 30 minutes? Because, I assume my blog viewers to either engage into the group chat module or leave that specific blog post within 30 minutes.
+
+Now whenever a user writes a message, this crumb is passed back to the server side. If user writes a message before 30 minutes, this crumb will be validated and user shout submitted. (30 minutes should take care of 99.99% of the cases). In response, server api sends back the new crumb which should be sent back with the next ajax call.
+
+Now when a spammer try to simulate the ajax request using curl calls, he will not be able to succeed because of the absence of the crumb. But he can capture the crumb from the site and simulate the effect, right? YES he can, but we can take care of this by reducing the life time of the generated crumb.
+
+
 ## Plugin Options
 
 The following options are available when registering the plugin
@@ -30,34 +38,4 @@ Additionally, some configuration can be passed on a per-route basis
 * 'source' - can be either 'payload' or 'query' specifying how the crumb will be sent in requests (defaults to payload)
 * 'restful' - an override for the server's 'restful' setting (defaults to match server setting)
 
-##What the heck is a crumb though?
-Let's say we allow users to post images on our forum. What if one of our users posted this image?
-```
-<img src="http://foo.com/logout">
-```
-Not really an image, true, but it will force the target URL to be retrieved by any random user who happens to browse that page -- using their browser credentials! From the webserver's perspective, there is no difference whatsoever between a real user initiated browser request and the above image URL retrieval.
-
-If our logout page was a simple HTTP GET that required no confirmation, every user who visited that page would immediately be logged out. That's XSRF in action. Not necessarily dangerous, but annoying. Not too difficult to envision much more destructive versions of this technique, is it?
-
-There are two obvious ways around this sort of basic XSRF attack:
-
-Use a HTTP POST form submission for logout, not a garden variety HTTP GET.
-Make the user confirm the logout.
-Easy fix, right? We probably should never have never done either of these things in the first place. Duh!
-
-Not so fast. Even with both of the above fixes, you are still vulnerable to XSRF attacks. Let's say I took my own advice, and converted the logout form to a HTTP POST, with a big button titled "Log Me Out" confirming the action. What's to stop a malicious user from placing a form like this on their own website ..
-```
-<body onload="document.getElementById('f').submit()">
-<form id="f" action="http://foo.com/logout" method="post">
-<input name="Log Me Out" value="Log Me Out" />
-</form>
-</body>
-```
-.. and then convincing other users to click on it?
-
-Remember, the browser will happily act on this request, submitting this form along with all necessary cookies and credentials directly to your website. Blam. Logged out. Exactly as if they had clicked on the "Log Me Out" button themselves.
-
-Sure, it takes a tiny bit more social engineering to convince users to visit some random web page, but it's not much. And the possibilities for attack are enormous: with XSRF, malicious users can initiate any arbitrary action they like on a target website. All they need to do is trick unwary users of your website -- who already have a validated user session cookie stored in their browser -- into clicking on their links.
-
-So what can we d
 
