@@ -13,11 +13,15 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
 **It is highly discouraged to have a production servers `cors.origin` setting set to "[\*]" or "true" with Crumb as it will leak the crumb token to potentially malicious sites**
 
 ##What the heck is a crumb though?
-A crumb is a unique electronic key which is shared between server and client, and which have a short life time. But how are these useful? Suppose, in my group chat module, upon page load i generate a crumb whose life time is 30 minutes (tunable). Why 30 minutes? Because, I assume my blog viewers to either engage into the group chat module or leave that specific blog post within 30 minutes.
+A crumb analogous to a web cookie is a unique electronic key which is shared between server and client, and which have a short life time. They are generated on web page request with a time limit for when it expires. When a user has to submit information whether it be their personal information or an instant message... crumbs are required upon request, the user sends a crumb will be validation. If it is not the same as the crumb intially set then the submission will fail. 
 
-Now whenever a user writes a message, this crumb is passed back to the server side. If user writes a message before 30 minutes, this crumb will be validated and user shout submitted. (30 minutes should take care of 99.99% of the cases). In response, server api sends back the new crumb which should be sent back with the next ajax call.
+Suppose, in my group chat module, upon page load I generate a crumb whose life time is 30 minutes. Why 30 minutes? Because, I assume my blog viewers to either engage into the group chat module or leave that specific blog post within 30 minutes.
+
+Now whenever a user writes a message, this crumb is passed back to the server side. If user writes a message before 30 minutes, this crumb will be validated and submitted. (30 minutes should take care of 99.99% of the cases). In response, server api sends back the new crumb which should be sent back with the next ajax call.
 
 Now when a spammer try to simulate the ajax request using curl calls, he will not be able to succeed because of the absence of the crumb. But he can capture the crumb from the site and simulate the effect, right? YES he can, but we can take care of this by reducing the life time of the generated crumb.
+
+
 
 
 ## Plugin Options
