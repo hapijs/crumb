@@ -12,17 +12,6 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
 
 **It is highly discouraged to have a production servers `cors.origin` setting set to "[\*]" or "true" with Crumb as it will leak the crumb token to potentially malicious sites**
 
-##What the heck is a crumb though?
-A crumb analogous to a web cookie is a unique electronic key which is shared between server and client, and which have a short life time. They are generated on web page request with a time limit for when it expires. When a user has to submit information whether it be their personal information or an instant message... crumbs are required upon request, the user sends a crumb will be validation. If it is not the same as the crumb intially set then the submission will fail. 
-
-In response, server api sends back the new crumb which should be sent back with the next ajax call.
-
-When a spammer tries simulate the ajax request calls, he/she will not be able to succeed because of the absence of the crumb. It is possible that the spammer will detect what the crumb is and send back the same crumb which defeats the purpose of having a crumb but, they are work arounds to prevent that as well.
-
-Most web application frameworks should have the capability to generate and validate crumbs to prevent hacking and security breaches of injected code.
-
-
-
 ## Plugin Options
 
 The following options are available when registering the plugin
