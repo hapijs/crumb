@@ -15,12 +15,19 @@ When a spammer tries simulate the ajax request calls, he/she will not be able to
 
 Most web application frameworks should have the capability to generate and validate crumbs to prevent hacking and security breaches of injected code.
 
+## What to Use Crumb for and When to Use It
+
+Crumb is used to mitigate CSRF attacks using a random unique token that is validated on the server side.
+
+Crumb may be used whenever you want to prevent malicious code to execute system commands that are performed by HTTP requests. For example if users are able to publish code on your website, this could force every user who opens the page to load and execute code from a third party website e.g. via an HTML image tag. If you implement Crumb into your application, you are able to verify requests with unique tokens and prevent the execution of malicious requests. 
 
 ## CORS
 
 Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owasp.org/index.php/HTML5_Security_Cheat_Sheet#Cross_Origin_Resource_Sharing) recommends using CSRF protection with CORS.
 
 **It is highly discouraged to have a production servers `cors.origin` setting set to "[\*]" or "true" with Crumb as it will leak the crumb token to potentially malicious sites**
+
+
 
 ## Plugin Options
 
