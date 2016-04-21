@@ -6,6 +6,13 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/ha
 
 Lead Maintainer: [Marcus Stong](https://github.com/stongo)
 
+## What is a crumb?
+A crumb is like a secret code that a person gives to an anonymous person. Its used to make sure the person being spoken to is the right person. Each individual must use the original code recieved for any communication to be valid.
+ 
+For example if they were FBI agents, the code would ensure that they are in fact agents for the FBI and not spy agents.
+
+Or if they were cab driver and a cab hailer from a smartphone, the person who hailed the cab would present the code to the cab driver to prove he is the one who requested it.
+
 ## CORS
 
 Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owasp.org/index.php/HTML5_Security_Cheat_Sheet#Cross_Origin_Resource_Sharing) recommends using CSRF protection with CORS.
@@ -29,3 +36,5 @@ Additionally, some configuration can be passed on a per-route basis
 * 'key' - the key used in the view contexts and payloads for the crumb (defaults to whatever the key value in the main settings is)
 * 'source' - can be either 'payload' or 'query' specifying how the crumb will be sent in requests (defaults to payload)
 * 'restful' - an override for the server's 'restful' setting (defaults to match server setting)
+
+
