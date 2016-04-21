@@ -6,6 +6,13 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/ha
 
 Lead Maintainer: [Marcus Stong](https://github.com/stongo)
 
+## What is a crumb?
+A crumb is like a secret code that a person gives to an anonymous person. Its used to make sure the person being spoken to is the right person. Each individual must use the original code recieved for any communication to be valid.
+ 
+For example if they were fbi agents… the code would ensure that they are in fact agents for the fbi and not a spy agents
+
+or if they were cab driver and a cab hailer from a smartphone… the person who hailed the cab would present the code to the cab driver to prove he is the one who requested it.
+
 ## CORS
 
 Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owasp.org/index.php/HTML5_Security_Cheat_Sheet#Cross_Origin_Resource_Sharing) recommends using CSRF protection with CORS.
