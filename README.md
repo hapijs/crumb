@@ -19,7 +19,7 @@ Most web application frameworks should have the capability to generate and valid
 
 Crumb is used to mitigate CSRF attacks using a random unique token that is validated on the server side.
 
-Crumb may be used whenever you want to prevent malicious code to execute system commands that are performed by HTTP requests. For example if users are able to publish code on your website, malicious code added by a user could force every other user who opens the page to load and execute code from a third party website e.g. via an HTML image tag. If you implement Crumb into your hapi.js application, you are able to verify requests with unique tokens and prevent the execution of malicious requests. 
+Crumb may be used whenever you want to prevent malicious code to execute system commands that are performed by HTTP requests. For example if users are able to publish code on your website, malicious code added by a user could force every other user who opens the page to load and execute code from a third party website e.g. via an HTML image tag. With Crumb implemented into your hapi.js application, you are able to verify requests with unique tokens and prevent the execution of malicious requests. 
 
 ## CORS
 
