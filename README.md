@@ -6,11 +6,19 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/ha
 
 Lead Maintainer: [Marcus Stong](https://github.com/stongo)
 
+## What to Use Crumb for and When to Use It
+
+Crumb is used to mitigate CSRF attacks using a random unique token that is validated on the server side.
+
+Crumb may be used whenever you want to prevent malicious code to execute system commands that are performed by HTTP requests. For example if users are able to publish code on your website, malicious code added by a user could force every other user who opens the page to load and execute code from a third party website e.g. via an HTML image tag. With Crumb implemented into your hapi.js application, you are able to verify requests with unique tokens and prevent the execution of malicious requests. 
+
 ## CORS
 
 Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owasp.org/index.php/HTML5_Security_Cheat_Sheet#Cross_Origin_Resource_Sharing) recommends using CSRF protection with CORS.
 
 **It is highly discouraged to have a production servers `cors.origin` setting set to "[\*]" or "true" with Crumb as it will leak the crumb token to potentially malicious sites**
+
+
 
 ## Plugin Options
 
