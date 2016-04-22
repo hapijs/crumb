@@ -7,13 +7,13 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/ha
 Lead Maintainer: [Marcus Stong](https://github.com/stongo)
 
 ## What the heck is a crumb though?
-A crumb analogous to a web cookie is a unique electronic key which is shared between server and client, and which have a short life time. They are generated on web page request with a time limit for when it expires. When a user has to submit information whether it be their personal information or an instant message... crumbs are required upon request, the user sends a crumb will be validation. If it is not the same as the crumb intially set then the submission will fail. 
+a crumb is like a secret code that a person gives to an anonymous person. to faciliate communication back and forth, each individual must use the original code recieved forany communication to be valid
 
-In response, server api sends back the new crumb which should be sent back with the next ajax call.
 
-When a spammer tries simulate the ajax request calls, he/she will not be able to succeed because of the absence of the crumb. It is possible that the spammer will detect what the crumb is and send back the same crumb which defeats the purpose of having a crumb but, they are work arounds to prevent that as well.
+or if they were fbi agents… the code would ensure that they are in fact agents for the fbi and not a spy agents
 
-Most web application frameworks should have the capability to generate and validate crumbs to prevent hacking and security breaches of injected code.
+[4:44] 
+or if they were cab service from a smartphone… the person who hailed the cab would present the code to the cab driver to prove he is the one who requested it..
 
 ## CORS
 
