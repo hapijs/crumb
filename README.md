@@ -7,11 +7,9 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/ha
 Lead Maintainer: [Marcus Stong](https://github.com/stongo)
 
 ## What the heck is a crumb though?
-A crumb is like a secret code that a person gives to an anonymous person that they must repeat back to prove they are the person who is able to speak. To faciliate communication back and forth, each individual must use the original code recieved for any communication to be valid.
+A crumb is like a secret code that a person gives to an anonymous person that they must repeat back to prove that they are the person who is able to speak. To faciliate communication back and forth, each individual must use the original code recieved for any communication to be valid.
 
-For example if they were FBI agents, the code would be shared one agent to the other ensure that they are in fact agents for the fbi and not a spy agents.
-
-Or if it communication was between a cab service and a taxi hailer, then the person who hailed the cab would present the code to the cab driver to prove he is the one who requested it. That code with the purpose of a crumb.
+For example if the communication was between a cab service and a taxi hailer, then the person who hailed the cab would present the code to the cab driver to prove he is the one who requested it. That code has the purpose of a crumb.
 
 ## CORS
 
