@@ -24,7 +24,7 @@ server.route([
         handler: function (request, reply) {
 
             // return crumb if desired
-            return reply('{ "crumb": ' + request.plugins.crumb + ' }');
+            return reply({ crumb: request.plugins.crumb });
         }
     },
 
