@@ -656,7 +656,7 @@ describe('Crumb', () => {
                                                         delete validHeader['x-csrf-token'];
                                                         server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader }, (res12) => {
 
-                                                            expect(res12.statusCode).to.equal(403);
+                                                            expect(res12.statusCode).to.equal(200);
                                                             done();
                                                         });
                                                     });
