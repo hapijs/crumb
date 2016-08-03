@@ -134,7 +134,7 @@ describe('Crumb', () => {
 
                                 Hoek.inherits(TestStream, Stream.Readable);
 
-                                TestStream.prototype._read = () => {
+                                TestStream.prototype._read = function () {
 
                                     const i = this._index++;
                                     if (i > this._max) {
