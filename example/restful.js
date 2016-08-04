@@ -16,15 +16,16 @@ server.register({ register: require('../'), options: { restful: true } }, (err) 
 
 server.route([
 
-    // a "crumb" cookie gets set with any request when not using views
+    // a "crumb" cookie should be set with any request
+    // for cross-origin requests, set CORS "credentials" to true
+    // a route returning the crumb can be created like this
 
     {
         method: 'GET',
         path: '/generate',
         handler: function (request, reply) {
 
-            // return crumb if desired
-            return reply({ crumb: request.plugins.crumb });
+            return reply({ crumb: server.plugins.crumb.generate() });
         }
     },
 
