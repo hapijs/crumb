@@ -25,7 +25,7 @@ server.route([
         path: '/generate',
         handler: function (request, reply) {
 
-            return reply({ crumb: server.plugins.crumb.generate() });
+            return reply({ crumb: server.plugins.crumb.generate(request, reply) });
         }
     },
 
