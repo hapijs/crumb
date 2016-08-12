@@ -462,14 +462,20 @@ describe('Crumb', () => {
                         const header3 = res3.headers['set-cookie'];
                         expect(header3[0]).to.contain('crumb');
 
-                        headers.origin = 'http://badsite.com';
+                        server.inject({ method: 'GET', url: '/3' }, (res4) => {
 
-                        server.inject({ method: 'GET', url: '/3', headers: headers }, (res4) => {
+                            const header4 = res3.headers['set-cookie'];
+                            expect(header4[0]).to.contain('crumb');
 
-                            const header4 = res4.headers['set-cookie'];
-                            expect(header4).to.not.exist();
+                            headers.origin = 'http://badsite.com';
 
-                            done();
+                            server.inject({ method: 'GET', url: '/3', headers: headers }, (res5) => {
+
+                                const header5 = res5.headers['set-cookie'];
+                                expect(header5).to.not.exist();
+
+                                done();
+                            });
                         });
                     });
                 });
