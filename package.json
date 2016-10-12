@@ -27,10 +27,10 @@
     "hapi": ">=12.x.x"
   },
   "devDependencies": {
-    "code": "2.x.x",
+    "code": "^4.0.0",
     "handlebars": "^4.0.5",
-    "hapi": "13.x.x",
-    "lab": "10.x.x",
+    "hapi": "^13.5.3",
+    "lab": "^10.9.0",
     "vision": "^4.0.0"
   },
   "scripts": {

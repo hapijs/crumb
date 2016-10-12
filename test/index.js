@@ -54,7 +54,7 @@ describe('Crumb', () => {
             {
                 method: 'POST', path: '/2', handler: (request, reply) => {
 
-                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    expect(request.payload).to.equal({ key: 'value' });
                     return reply('valid');
                 }
             },
@@ -546,7 +546,7 @@ describe('Crumb', () => {
             {
                 method: 'POST', path: '/2', handler: (request, reply) => {
 
-                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    expect(request.payload).to.equal({ key: 'value' });
                     return reply('valid');
                 }
             },
@@ -559,14 +559,14 @@ describe('Crumb', () => {
             {
                 method: 'PUT', path: '/4', handler: (request, reply) => {
 
-                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    expect(request.payload).to.equal({ key: 'value' });
                     return reply('valid');
                 }
             },
             {
                 method: 'PATCH', path: '/5', handler: (request, reply) => {
 
-                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    expect(request.payload).to.equal({ key: 'value' });
                     return reply('valid');
                 }
             },
@@ -579,14 +579,14 @@ describe('Crumb', () => {
             {
                 method: 'POST', path: '/7', config: { plugins: { crumb: false } }, handler: (request, reply) => {
 
-                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    expect(request.payload).to.equal({ key: 'value' });
                     return reply('valid');
                 }
             },
             {
                 method: 'POST', path: '/8', config: { plugins: { crumb: { restful: false, source: 'payload' } } }, handler: (request, reply) => {
 
-                    expect(request.payload).to.deep.equal({ key: 'value' });
+                    expect(request.payload).to.equal({ key: 'value' });
                     return reply('valid');
                 }
             }
