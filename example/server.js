@@ -1,43 +1,64 @@
 'use strict';
 
 const Hapi = require('hapi');
+const Vision = require('vision');
 
 const server = new Hapi.Server();
-server.connection({ host: '127.0.0.1', port: 8000 });
 
-server.views({
-    path: __dirname + '/templates',
-    engines: {
-        html: require('handlebars')
-    }
+server.connection({
+  host: '127.0.0.1',
+  port: 8000
 });
 
-server.register({ register: require('../'), options: { cookieOptions: { isSecure: false } } }, (err) => {
+const registrations = [
+  {
+      register: Vision
+  },
+  {
+      register: require('../'),
+      options: {
+          cookieOptions: {
+              isSecure: false
+          }
+      }
+  },
+];
+
+
+server.register(registrations, (err) => {
 
     if (err) {
         throw err;
     }
-});
 
-server.route({
-    method: 'get',
-    path: '/',
-    handler: function (request, reply) {
+    server.views({
+        relativeTo: __dirname,
+        path: 'templates',
+        engines: {
+            html: require('handlebars')
+        }
+    });
 
-        return reply.view('index', { title: 'test', message: 'hi' });
-    }
-});
+    server.route({
+        method: 'get',
+        path: '/',
+        handler: function (request, reply) {
 
-server.route({
-    method: 'post',
-    path: '/',
-    handler: function (request, reply) {
+            return reply.view('index', { title: 'test', message: 'hi' });
+        }
+    });
 
-        return reply.view('message', { title: 'test', message: request.payload.message });
-    }
-});
+    server.route({
+        method: 'post',
+        path: '/',
+        handler: function (request, reply) {
 
-server.start(() => {
+            return reply.view('message', { title: 'test', message: request.payload.message });
+        }
+    });
 
-    console.log('Example server running at:', server.info.uri);
+    server.start(() => {
+
+        console.log('Example server running at:', server.info.uri);
+    });
 });
