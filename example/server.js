@@ -6,22 +6,22 @@ const Vision = require('vision');
 const server = new Hapi.Server();
 
 server.connection({
-  host: '127.0.0.1',
-  port: 8000
+    host: '127.0.0.1',
+    port: 8000
 });
 
 const registrations = [
-  {
-      register: Vision
-  },
-  {
-      register: require('../'),
-      options: {
-          cookieOptions: {
-              isSecure: false
-          }
-      }
-  },
+    {
+        register: Vision
+    },
+    {
+        register: require('../'),
+        options: {
+            cookieOptions: {
+                isSecure: false
+            }
+        }
+    }
 ];
 
 
