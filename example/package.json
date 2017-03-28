@@ -1,0 +1,19 @@
+{
+  "name": "crumb-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "restful.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "start:restful": "node restful.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "handlebars": "^4.0.6",
+    "hapi": "^16.1.0",
+    "vision": "^4.1.1"
+  }
+}
