@@ -71,7 +71,7 @@ The following options are available when registering the plugin.
 
 ### Routes configuration
 
-Additionally, some configuration can be passed on a per-route basis.
+Additionally, some configuration can be passed on a per-route basis. Disable Crumb for a particular route by passing `false` instead of a configuration object.
 
   * `key` - the key used in the view contexts and payloads for the crumb. Defaults to `plugin.key`.
   * `source` - can be either `payload` or `query` specifying how the crumb will be sent in requests. Defaults to `payload`.
