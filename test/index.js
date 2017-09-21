@@ -828,4 +828,236 @@ describe('Crumb', () => {
 
         expect(res12.statusCode).to.equal(200);
     });
+
+    it('validates crumb with a custom header name', async () => {
+
+        const server = new Hapi.Server();
+
+        server.route([
+            {
+                method: 'GET',
+                path: '/1',
+                handler: (request, h) => {
+
+                    expect(request.plugins.crumb).to.exist();
+                    expect(request.server.plugins.crumb.generate).to.exist();
+
+                    return h.view('index', {
+                        title: 'test',
+                        message: 'hi'
+                    });
+                }
+            },
+            {
+                method: 'POST',
+                path: '/2',
+                handler: (request, h) => {
+
+                    expect(request.payload).to.equal({ key: 'value' });
+                    return 'valid';
+                }
+            },
+            {
+                method: 'POST',
+                path: '/3',
+                options: { payload: { output: 'stream' } },
+                handler: (request, h) => 'never'
+            },
+            {
+                method: 'PUT',
+                path: '/4',
+                handler: (request, h) => {
+
+                    expect(request.payload).to.equal({ key: 'value' });
+                    return 'valid';
+                }
+            },
+            {
+                method: 'PATCH',
+                path: '/5',
+                handler: (request, h) => {
+
+                    expect(request.payload).to.equal({ key: 'value' });
+                    return 'valid';
+                }
+            },
+            {
+                method: 'DELETE',
+                path: '/6',
+                handler: (request, h) => 'valid'
+            },
+            {
+                method: 'POST',
+                path: '/7',
+                options: {
+                    plugins: {
+                        crumb: false
+                    }
+                },
+                handler: (request, h) => {
+
+                    expect(request.payload).to.equal({ key: 'value' });
+                    return 'valid';
+                }
+            },
+            {
+                method: 'POST',
+                path: '/8',
+                options: {
+                    plugins: {
+                        crumb: {
+                            restful: false,
+                            source: 'payload'
+                        }
+                    }
+                },
+                handler: (request, h) => {
+
+                    expect(request.payload).to.equal({ key: 'value' });
+                    return 'valid';
+                }
+            }
+
+        ]);
+
+        await server.register([
+            Vision,
+            {
+                plugin: Crumb,
+                options: {
+                    restful: true,
+                    cookieOptions: {
+                        isSecure: true
+                    },
+                    headerName: 'X-CUSTOM-TOKEN'
+                }
+            }
+        ]);
+
+        server.views(internals.viewOptions);
+
+        const res = await server.inject({
+            method: 'GET',
+            url: '/1'
+        });
+
+        const header = res.headers['set-cookie'];
+        expect(header.length).to.equal(1);
+        expect(header[0]).to.contain('Secure');
+
+        const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+
+        const validHeader = {
+            cookie: 'crumb=' + cookie[1],
+            'x-custom-token': cookie[1]
+        };
+
+        const invalidHeader = {
+            cookie: 'crumb=' + cookie[1],
+            'x-custom-token': 'x' + cookie[1]
+        };
+
+        expect(res.result).to.equal(Views.viewWithCrumb(cookie[1]));
+
+        const res2 = await server.inject({
+            method: 'POST',
+            url: '/2',
+            payload: '{ "key": "value" }',
+            headers: validHeader
+        });
+
+        expect(res2.result).to.equal('valid');
+
+        const res3 = await server.inject({
+            method: 'POST',
+            url: '/2',
+            payload: '{ "key": "value" }',
+            headers: invalidHeader
+        });
+
+        expect(res3.statusCode).to.equal(403);
+
+        const res4 = await server.inject({
+            method: 'POST',
+            url: '/3',
+            headers: {
+                cookie: 'crumb=' + cookie[1]
+            }
+        });
+
+        expect(res4.statusCode).to.equal(403);
+
+        const res5 = await server.inject({
+            method: 'PUT',
+            url: '/4',
+            payload: '{ "key": "value" }',
+            headers: validHeader
+        });
+
+        expect(res5.result).to.equal('valid');
+
+        const res6 = await server.inject({
+            method: 'PUT',
+            url: '/4',
+            payload: '{ "key": "value" }',
+            headers: invalidHeader
+        });
+
+        expect(res6.statusCode).to.equal(403);
+
+        const res7 = await server.inject({
+            method: 'PATCH',
+            url: '/5',
+            payload: '{ "key": "value" }',
+            headers: validHeader
+        });
+
+        expect(res7.result).to.equal('valid');
+
+        const res8 = await server.inject({
+            method: 'PATCH',
+            url: '/5',
+            payload: '{ "key": "value" }',
+            headers: invalidHeader
+        });
+
+        expect(res8.statusCode).to.equal(403);
+
+        const res9 = await server.inject({
+            method: 'DELETE',
+            url: '/6',
+            headers: validHeader
+        });
+
+        expect(res9.result).to.equal('valid');
+
+        const res10 = await server.inject({
+            method: 'DELETE',
+            url: '/6',
+            headers: invalidHeader
+        });
+
+        expect(res10.statusCode).to.equal(403);
+
+        const res11 = await server.inject({
+            method: 'POST',
+            url: '/7',
+            payload: '{ "key": "value" }'
+        });
+
+        expect(res11.result).to.equal('valid');
+
+        const payload = { key: 'value', crumb: cookie[1] };
+
+        delete validHeader['x-custom-token'];
+
+        const res12 = await server.inject({
+            method: 'POST',
+            url: '/8',
+            payload: JSON.stringify(payload),
+            headers: validHeader
+        });
+
+        expect(res12.statusCode).to.equal(200);
+    });
 });

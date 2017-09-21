@@ -68,6 +68,7 @@ The following options are available when registering the plugin.
   * `autoGenerate` - whether to automatically generate a new crumb for requests. Defaults to `true`.
   * `addToViewContext` - whether to automatically add the crumb to view contexts as the given key. Defaults to `true`.
   * `cookieOptions` - storage options for the cookie containing the crumb, see the [server.state](http://hapijs.com/api#serverstatename-options) documentation of hapi for more information. Default to `cookieOptions.path=/`
+  * `headerName` - specify the name of the custom CSRF header. Defaults to `X-CSRF-Token`.
   * `restful` - RESTful mode that validates crumb tokens from *"X-CSRF-Token"* request header for **POST**, **PUT**, **PATCH** and **DELETE** server routes. Disables payload/query crumb validation. Defaults to `false`.
   * `skip` - a function with the signature of `function (request, h) {}`, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped. Defaults to `false`.
 
