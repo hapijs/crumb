@@ -63,13 +63,21 @@ describe('Crumb', () => {
             {
                 method: 'POST',
                 path: '/3',
-                options: { payload: { output: 'stream' } },
+                options: {
+                    payload: {
+                        output: 'stream'
+                    }
+                },
                 handler: (request, h) => 'never'
             },
             {
                 method: 'GET',
                 path: '/4',
-                options: { plugins: { crumb: false } },
+                options: {
+                    plugins: {
+                        crumb: false
+                    }
+                },
                 handler: (request, h) => {
 
                     return h.view('index', {
@@ -81,7 +89,11 @@ describe('Crumb', () => {
             {
                 method: 'POST',
                 path: '/5',
-                options: { payload: { output: 'stream' } },
+                options: {
+                    payload: {
+                        output: 'stream'
+                    }
+                },
                 handler: (request, h) => 'yo'
             },
             {
@@ -288,7 +300,10 @@ describe('Crumb', () => {
 
         server.views(internals.viewOptions);
 
-        const res = await server.inject({ method: 'GET', url: '/1' });
+        const res = await server.inject({
+            method: 'GET',
+            url: '/1'
+        });
 
         const header = res.headers['set-cookie'];
         expect(header.length).to.equal(1);
@@ -358,7 +373,11 @@ describe('Crumb', () => {
 
         server.views(internals.viewOptions);
 
-        await server.inject({ method: 'GET', url: '/1' });
+        await server.inject({
+            method: 'GET',
+            url: '/1'
+        });
+
         const res = await server.inject({ method: 'GET', url: '/2' });
 
         const header = res.headers['set-cookie'];
@@ -412,10 +431,16 @@ describe('Crumb', () => {
 
         await server.register(plugins);
 
-        const headers = {};
-        headers['X-API-Token'] = 'test';
+        const headers = {
+            'X-API-Token': 'test'
+        };
 
-        const res = await server.inject({ method: 'POST', url: '/1', headers });
+        const res = await server.inject({
+            method: 'POST',
+            url: '/1',
+            headers
+        });
+
         const header = res.headers['set-cookie'];
 
         expect(res.statusCode).to.equal(200);
@@ -461,7 +486,9 @@ describe('Crumb', () => {
         server.route({
             method: 'GET',
             path: '/1',
-            options: { cors: false },
+            options: {
+                cors: false
+            },
             handler: (request, h) => 'test'
         });
 
@@ -631,7 +658,11 @@ describe('Crumb', () => {
             {
                 method: 'POST',
                 path: '/7',
-                options: { plugins: { crumb: false } },
+                options: {
+                    plugins: {
+                        crumb: false
+                    }
+                },
                 handler: (request, h) => {
 
                     expect(request.payload).to.equal({ key: 'value' });
@@ -641,7 +672,14 @@ describe('Crumb', () => {
             {
                 method: 'POST',
                 path: '/8',
-                options: { plugins: { crumb: { restful: false, source: 'payload' } } },
+                options: {
+                    plugins: {
+                        crumb: {
+                            restful: false,
+                            source: 'payload'
+                        }
+                    }
+                },
                 handler: (request, h) => {
 
                     expect(request.payload).to.equal({ key: 'value' });
@@ -677,13 +715,15 @@ describe('Crumb', () => {
 
         const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
 
-        const validHeader = {};
-        validHeader.cookie = 'crumb=' + cookie[1];
-        validHeader['x-csrf-token'] = cookie[1];
+        const validHeader = {
+            cookie: 'crumb=' + cookie[1],
+            'x-csrf-token': cookie[1]
+        };
 
-        const invalidHeader = {};
-        invalidHeader.cookie = 'crumb=' + cookie[1];
-        invalidHeader['x-csrf-token'] = 'x' + cookie[1];
+        const invalidHeader = {
+            cookie: 'crumb=' + cookie[1],
+            'x-csrf-token': 'x' + cookie[1]
+        };
 
         expect(res.result).to.equal(Views.viewWithCrumb(cookie[1]));
 
