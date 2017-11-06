@@ -26,7 +26,9 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
   const Hapi = require('hapi');
   const Crumb = require('crumb');
 
-  const server = new Hapi.Server();
+  const server = new Hapi.Server({
+    port: 8000
+  });
 
   (async () => {
     await server.register({
