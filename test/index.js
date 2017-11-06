@@ -299,7 +299,7 @@ describe('Crumb', () => {
                 }
             },
             {
-                method: 'GET', path: '/2', options: { plugins: { crumb: true } }, handler: (request, reply) => {
+                method: 'GET', path: '/2', options: { plugins: { crumb: true } }, handler: (request, h) => {
 
                     return 'hola';
                 }
