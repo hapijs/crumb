@@ -1,27 +1,34 @@
 'use strict';
 
 const Hapi = require('hapi');
+const Vision = require('vision');
 
 const server = new Hapi.Server({
     host: '127.0.0.1',
     port: 8000
 });
 
-server.views({
-    path: __dirname + '/templates',
-    engines: {
-        html: require('handlebars')
-    }
-});
-
-(async () => {
-
-    await server.register({
+const plugins = [
+    Vision,
+    {
         plugin: require('../'),
         options: {
             cookieOptions: {
                 isSecure: false
             }
+        }
+    }
+];
+
+(async () => {
+
+    await server.register(plugins);
+
+    server.views({
+        relativeTo: __dirname,
+        path: 'templates',
+        engines: {
+            html: require('handlebars')
         }
     });
 

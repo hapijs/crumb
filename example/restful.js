@@ -1,22 +1,28 @@
 'use strict';
 
 const Hapi = require('hapi');
+const Vision = require('vision');
 
 const server = new Hapi.Server({
     host: '127.0.0.1',
     port: 8000
 });
 
-// Add Crumb plugin
-
-(async () => {
-
-    await server.register({
+const plugins = [
+    Vision,
+    {
         plugin: require('../'),
         options: {
             restful: true
         }
-    });
+    }
+];
+
+// Add Crumb plugin
+
+(async () => {
+
+    await server.register(plugins);
 
     server.route([
 
