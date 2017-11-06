@@ -28,27 +28,29 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
 
   const server = new Hapi.Server();
 
-  await server.register({
-    plugin: crumb,
+  (async () => {
+    await server.register({
+      plugin: crumb,
 
-    // plugin options
-    options: {}
-  });
+      // plugin options
+      options: {}
+    });
 
-  server.route({
-    path: '/login',
-    method: 'GET',
-    options: {
-      plugins: {
-        // route specific options
-        crumb: {}
-      },
-      handler(request, h) {
-        // this requires to have a view engine configured
-        return h.view('some-view');
+    server.route({
+      path: '/login',
+      method: 'GET',
+      options: {
+        plugins: {
+          // route specific options
+          crumb: {}
+        },
+        handler(request, h) {
+          // this requires to have a view engine configured
+          return h.view('some-view');
+        }
       }
-    }
-  });
+    });
+  })();
 ```
 
 For a complete example see [the examples folder](./example).
