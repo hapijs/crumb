@@ -32,7 +32,7 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
 
   (async () => {
     await server.register({
-      plugin: crumb,
+      plugin: Crumb,
 
       // plugin options
       options: {}
