@@ -168,7 +168,7 @@ describe('Crumb', () => {
                                             const headers = {};
                                             headers.origin = 'http://127.0.0.1';
 
-                                            server.inject({ method: 'GET', url: '/1', headers: headers }, (res9) => {
+                                            server.inject({ method: 'GET', url: '/1', headers }, (res9) => {
 
                                                 const cookie4 = res9.headers['set-cookie'].toString();
                                                 expect(cookie4).to.contain('crumb');
@@ -357,7 +357,7 @@ describe('Crumb', () => {
             expect(err).to.not.exist();
             const headers = {};
             headers['X-API-Token'] = 'test';
-            server.inject({ method: 'POST', url: '/1', headers: headers }, (res) => {
+            server.inject({ method: 'POST', url: '/1', headers }, (res) => {
 
                 expect(res.statusCode).to.equal(403);
                 done();
@@ -383,12 +383,12 @@ describe('Crumb', () => {
             return request.headers['x-api-token'] === 'test';
         };
 
-        server.register([{ register: Crumb, options: { skip: skip } }], (err) => {
+        server.register([{ register: Crumb, options: { skip } }], (err) => {
 
             expect(err).to.not.exist();
             const headers = {};
             headers['X-API-Token'] = 'test';
-            server.inject({ method: 'POST', url: '/1', headers: headers }, (res) => {
+            server.inject({ method: 'POST', url: '/1', headers }, (res) => {
 
                 expect(res.statusCode).to.equal(200);
                 const header = res.headers['set-cookie'];
@@ -413,7 +413,7 @@ describe('Crumb', () => {
 
         const skip = true;
 
-        server.register([{ register: Vision }, { register: Crumb, options: { skip: skip } }], (err) => {
+        server.register([{ register: Vision }, { register: Crumb, options: { skip } }], (err) => {
 
             expect(err).to.exist();
             done();
@@ -443,21 +443,21 @@ describe('Crumb', () => {
 
             const headers = {};
 
-            server.inject({ method: 'GET', url: '/1', headers: headers }, (res) => {
+            server.inject({ method: 'GET', url: '/1', headers }, (res) => {
 
                 const header = res.headers['set-cookie'];
                 expect(header[0]).to.contain('crumb');
 
                 headers.origin = 'http://localhost';
 
-                server.inject({ method: 'GET', url: '/2', headers: headers }, (res2) => {
+                server.inject({ method: 'GET', url: '/2', headers }, (res2) => {
 
                     const header2 = res2.headers['set-cookie'];
                     expect(header2[0]).to.contain('crumb');
 
                     headers.origin = 'http://127.0.0.1';
 
-                    server.inject({ method: 'GET', url: '/3', headers: headers }, (res3) => {
+                    server.inject({ method: 'GET', url: '/3', headers }, (res3) => {
 
                         const header3 = res3.headers['set-cookie'];
                         expect(header3[0]).to.contain('crumb');
@@ -469,7 +469,7 @@ describe('Crumb', () => {
 
                             headers.origin = 'http://badsite.com';
 
-                            server.inject({ method: 'GET', url: '/3', headers: headers }, (res5) => {
+                            server.inject({ method: 'GET', url: '/3', headers }, (res5) => {
 
                                 const header5 = res5.headers['set-cookie'];
                                 expect(header5).to.not.exist();
