@@ -1,8 +1,9 @@
 'use strict';
 
 // Load modules
-/*eslint "hapi/no-shadow-relaxed": 0*/
+
 const Stream = require('stream');
+const Code = require('code');
 const Crumb = require('../');
 const Hapi = require('hapi');
 const Lab = require('lab');
@@ -16,16 +17,14 @@ const internals = {};
 
 // Test shortcuts
 
-const lab = exports.lab = Lab.script();
-const describe = lab.describe;
-const it = lab.it;
-const expect = lab.expect;
+const { describe, it } = exports.lab = Lab.script();
+const { expect } = Code;
 const Vision = require('vision');
 
 
 describe('Crumb', () => {
 
-    it('returns view with crumb', (done) => {
+    it('returns view with crumb', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -92,100 +91,93 @@ describe('Crumb', () => {
             }
         ]);
 
-        server.register([{ register: Vision }, { register: Crumb, options: { cookieOptions: { isSecure: true } } }], (err) => {
-
+        try {
+            await server.register([{ register: Vision }, { register: Crumb, options: { cookieOptions: { isSecure: true } } }]);
+        }
+        catch (err) {
             expect(err).to.not.exist();
 
-            server.views(viewOptions);
+            return;
+        }
 
-            server.inject({ method: 'GET', url: '/1' }, (res) => {
+        server.views(viewOptions);
 
-                expect(res.statusCode).to.equal(200);
-                const header = res.headers['set-cookie'];
-                expect(header.length).to.equal(1);
-                expect(header[0]).to.contain('Secure');
+        const res = await server.inject({ method: 'GET', url: '/1' });
+        expect(res.statusCode).to.equal(200);
 
-                const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
+        const header = res.headers['set-cookie'];
+        expect(header.length).to.equal(1);
+        expect(header[0]).to.contain('Secure');
 
-                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, (res2) => {
+        const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+        expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                    expect(res2.result).to.equal('valid');
+        const res2 = await server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } });
 
-                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "x' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } }, (res3) => {
+        expect(res2.result).to.equal('valid');
 
-                        expect(res3.statusCode).to.equal(403);
+        const res3 = await server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value", "crumb": "x' + cookie[1] + '" }', headers: { cookie: 'crumb=' + cookie[1] } });
 
-                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, (res4) => {
+        expect(res3.statusCode).to.equal(403);
 
-                            expect(res4.statusCode).to.equal(403);
+        const res4 = await server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } });
 
-                            server.inject({ method: 'GET', url: '/4' }, (res5) => {
+        expect(res4.statusCode).to.equal(403);
 
-                                expect(res5.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
+        const res5 = await server.inject({ method: 'GET', url: '/4' });
 
-                                const TestStream = function (opt) {
+        expect(res5.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
 
-                                    Stream.Readable.call(this, opt);
-                                    this._max = 2;
-                                    this._index = 1;
-                                };
+        const TestStream = function (opt) {
 
-                                Hoek.inherits(TestStream, Stream.Readable);
+            Stream.Readable.call(this, opt);
+            this._max = 2;
+            this._index = 1;
+        };
 
-                                TestStream.prototype._read = function () {
+        Hoek.inherits(TestStream, Stream.Readable);
 
-                                    const i = this._index++;
-                                    if (i > this._max) {
-                                        this.push(null);
-                                    }
-                                    else {
-                                        const str = '' + i;
-                                        const buf = new Buffer(str, 'ascii');
-                                        this.push(buf);
-                                    }
-                                };
+        TestStream.prototype._read = function () {
 
-                                server.inject({ method: 'POST', url: '/5', payload: new TestStream(), headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename="test.txt"' }, simulate: { end: true } }, (res6) => {
+            const i = this._index++;
+            if (i > this._max) {
+                this.push(null);
+            }
+            else {
+                const str = '' + i;
+                const buf = new Buffer(str, 'ascii');
+                this.push(buf);
+            }
+        };
 
-                                    expect(res6.statusCode).to.equal(403);
+        const res6 = await server.inject({ method: 'POST', url: '/5', payload: new TestStream(), headers: { 'content-type': 'application/octet-stream', 'content-disposition': 'attachment; filename="test.txt"' }, simulate: { end: true } });
 
-                                    server.inject({ method: 'GET', url: '/6' }, (res7) => {
+        expect(res6.statusCode).to.equal(403);
 
-                                        const header2 = res7.headers['set-cookie'];
-                                        expect(header2.length).to.equal(1);
-                                        expect(header2[0]).to.contain('Secure');
+        const res7 = await server.inject({ method: 'GET', url: '/6' });
 
-                                        const cookie2 = header2[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-                                        expect(res7.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie2[1] + '</h2></div></body></html>');
+        const header2 = res7.headers['set-cookie'];
+        expect(header2.length).to.equal(1);
+        expect(header2[0]).to.contain('Secure');
 
-                                        server.inject({ method: 'GET', url: '/7' }, (res8) => {
+        const cookie2 = header2[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+        expect(res7.result).to.equal('<!DOCTYPE html><html><head><title></title></head><body><div><h1></h1><h2>' + cookie2[1] + '</h2></div></body></html>');
 
-                                            const cookie3 = res8.headers['set-cookie'].toString();
-                                            expect(cookie3).to.contain('crumb');
+        const res8 = await server.inject({ method: 'GET', url: '/7' });
 
-                                            const headers = {};
-                                            headers.origin = 'http://127.0.0.1';
+        const cookie3 = res8.headers['set-cookie'].toString();
+        expect(cookie3).to.contain('crumb');
 
-                                            server.inject({ method: 'GET', url: '/1', headers }, (res9) => {
+        const headers = {};
+        headers.origin = 'http://127.0.0.1';
 
-                                                const cookie4 = res9.headers['set-cookie'].toString();
-                                                expect(cookie4).to.contain('crumb');
+        const res9 = await server.inject({ method: 'GET', url: '/1', headers });
 
-                                                done();
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
+        const cookie4 = res9.headers['set-cookie'].toString();
+        expect(cookie4).to.contain('crumb');
     });
 
-    it('Does not add crumb to view context when "addToViewContext" option set to false', (done) => {
+    it('Does not add crumb to view context when "addToViewContext" option set to false', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -210,21 +202,20 @@ describe('Crumb', () => {
             }
         });
 
-        server.register([{ register: Vision }, { register: Crumb, options: { cookieOptions: { isSecure: true }, addToViewContext: false } }], (err) => {
-
-            expect(err).to.not.exist();
-
+        try {
+            await server.register([{ register: Vision }, { register: Crumb, options: { cookieOptions: { isSecure: true }, addToViewContext: false } }]);
             server.views(viewOptions);
 
-            server.inject({ method: 'GET', url: '/1' }, (res) => {
+            const res = await server.inject({ method: 'GET', url: '/1' });
 
-                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
-                done();
-            });
-        });
+            expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2></h2></div></body></html>');
+        }
+        catch (err) {
+            expect(err).to.not.exist();
+        }
     });
 
-    it('Works without specifying plugin options', (done) => {
+    it('Works without specifying plugin options', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -249,46 +240,45 @@ describe('Crumb', () => {
             }
         });
 
-        server.register([{ register: Vision }, { register: Crumb, options: null }], (err) => {
-
-            expect(err).to.not.exist();
+        try {
+            await server.register([{ register: Vision }, { register: Crumb, options: null }]);
 
             server.views(viewOptions);
 
+            const res = await server.inject({ method: 'GET', url: '/1' });
 
-            server.inject({ method: 'GET', url: '/1' }, (res) => {
+            const header = res.headers['set-cookie'];
+            expect(header.length).to.equal(1);
 
-                const header = res.headers['set-cookie'];
-                expect(header.length).to.equal(1);
-
-                const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
-                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
-                done();
-
-            });
-        });
+            const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+            expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
+        }
+        catch (err) {
+            expect(err).to.not.exist();
+        }
     });
 
-    it('should fail to register with bad options', (done) => {
+    it('should fail to register with bad options', async () => {
 
         const server = new Hapi.Server();
         server.connection();
 
-        server.register({
-            register: Crumb,
-            options: {
-                foo: 'bar'
-            }
-        }, (err) => {
-
+        try {
+            await server.register({
+                register: Crumb,
+                options: {
+                    foo: 'bar'
+                }
+            });
+        }
+        catch (err) {
             expect(err).to.exist();
             expect(err.name).to.equal('ValidationError');
             expect(err.message).to.equal('"foo" is not allowed');
-            done();
-        });
+        }
     });
 
-    it('route uses crumb when route.config.plugins.crumb set to true and autoGenerate set to false', (done) => {
+    it('route uses crumb when route.config.plugins.crumb set to true and autoGenerate set to false', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -319,26 +309,23 @@ describe('Crumb', () => {
             }
         ]);
 
-        server.register([{ register: Vision }, { register: Crumb, options: { autoGenerate: false } }], (err) => {
-
-            expect(err).to.not.exist();
+        try {
+            await server.register([{ register: Vision }, { register: Crumb, options: { autoGenerate: false } }]);
 
             server.views(viewOptions);
 
+            await server.inject({ method: 'GET', url: '/1' });
+            const res = await server.inject({ method: 'GET', url: '/2' });
 
-            server.inject({ method: 'GET', url: '/1' }, () => {
-
-                server.inject({ method: 'GET', url: '/2' }, (res) => {
-
-                    const header = res.headers['set-cookie'];
-                    expect(header.length).to.equal(1);
-                    done();
-                });
-            });
-        });
+            const header = res.headers['set-cookie'];
+            expect(header.length).to.equal(1);
+        }
+        catch (err) {
+            expect(err).to.not.exist();
+        }
     });
 
-    it('fails validation when no payload provided and not using restful mode', (done) => {
+    it('fails validation when no payload provided and not using restful mode', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -351,20 +338,22 @@ describe('Crumb', () => {
             }
         ]);
 
-        server.register([{ register: Crumb }], (err) => {
+        try {
+            await server.register([{ register: Crumb }]);
 
-            expect(err).to.not.exist();
             const headers = {};
             headers['X-API-Token'] = 'test';
-            server.inject({ method: 'POST', url: '/1', headers }, (res) => {
 
-                expect(res.statusCode).to.equal(403);
-                done();
-            });
-        });
+            const res = await server.inject({ method: 'POST', url: '/1', headers });
+
+            expect(res.statusCode).to.equal(403);
+        }
+        catch (err) {
+            expect(err).to.not.exist();
+        }
     });
 
-    it('does not validate crumb when "skip" option returns true', (done) => {
+    it('does not validate crumb when "skip" option returns true', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -382,22 +371,24 @@ describe('Crumb', () => {
             return request.headers['x-api-token'] === 'test';
         };
 
-        server.register([{ register: Crumb, options: { skip } }], (err) => {
+        try {
+            await server.register([{ register: Crumb, options: { skip } }]);
 
-            expect(err).to.not.exist();
             const headers = {};
             headers['X-API-Token'] = 'test';
-            server.inject({ method: 'POST', url: '/1', headers }, (res) => {
 
-                expect(res.statusCode).to.equal(200);
-                const header = res.headers['set-cookie'];
-                expect(header).to.not.exist();
-                done();
-            });
-        });
+            const res = await server.inject({ method: 'POST', url: '/1', headers });
+            const header = res.headers['set-cookie'];
+
+            expect(res.statusCode).to.equal(200);
+            expect(header).to.not.exist();
+        }
+        catch (err) {
+            expect(err).to.not.exist();
+        }
     });
 
-    it('ensures crumb "skip" option is a function', (done) => {
+    it('ensures crumb "skip" option is a function', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -412,14 +403,15 @@ describe('Crumb', () => {
 
         const skip = true;
 
-        server.register([{ register: Vision }, { register: Crumb, options: { skip } }], (err) => {
-
+        try {
+            await server.register([{ register: Vision }, { register: Crumb, options: { skip } }]);
+        }
+        catch (err) {
             expect(err).to.exist();
-            done();
-        });
+        }
     });
 
-    it('does not set crumb cookie insecurely', (done) => {
+    it('does not set crumb cookie insecurely', async () => {
 
         const server = new Hapi.Server();
         server.connection({ host: 'localhost', port: 80, routes: { cors: true } });
@@ -436,53 +428,48 @@ describe('Crumb', () => {
             return reply('test');
         } });
 
-        server.register([{ register: Crumb, options: null }], (err) => {
-
-            expect(err).to.not.exist();
+        try {
+            await server.register([{ register: Crumb, options: null }]);
 
             const headers = {};
 
-            server.inject({ method: 'GET', url: '/1', headers }, (res) => {
+            const res = await server.inject({ method: 'GET', url: '/1', headers });
 
-                const header = res.headers['set-cookie'];
-                expect(header[0]).to.contain('crumb');
+            const header = res.headers['set-cookie'];
+            expect(header[0]).to.contain('crumb');
 
-                headers.origin = 'http://localhost';
+            headers.origin = 'http://localhost';
 
-                server.inject({ method: 'GET', url: '/2', headers }, (res2) => {
+            const res2 = await server.inject({ method: 'GET', url: '/2', headers });
 
-                    const header2 = res2.headers['set-cookie'];
-                    expect(header2[0]).to.contain('crumb');
+            const header2 = res2.headers['set-cookie'];
+            expect(header2[0]).to.contain('crumb');
 
-                    headers.origin = 'http://127.0.0.1';
+            headers.origin = 'http://127.0.0.1';
 
-                    server.inject({ method: 'GET', url: '/3', headers }, (res3) => {
+            const res3 = await server.inject({ method: 'GET', url: '/3', headers });
+            const header3 = res3.headers['set-cookie'];
 
-                        const header3 = res3.headers['set-cookie'];
-                        expect(header3[0]).to.contain('crumb');
+            expect(header3[0]).to.contain('crumb');
 
-                        server.inject({ method: 'GET', url: '/3' }, (res4) => {
+            const res4 = await server.inject({ method: 'GET', url: '/3' });
+            const header4 = res4.headers['set-cookie'];
 
-                            const header4 = res3.headers['set-cookie'];
-                            expect(header4[0]).to.contain('crumb');
+            expect(header4[0]).to.contain('crumb');
 
-                            headers.origin = 'http://badsite.com';
+            headers.origin = 'http://badsite.com';
 
-                            server.inject({ method: 'GET', url: '/3', headers }, (res5) => {
+            const res5 = await server.inject({ method: 'GET', url: '/3', headers });
 
-                                const header5 = res5.headers['set-cookie'];
-                                expect(header5).to.not.exist();
-
-                                done();
-                            });
-                        });
-                    });
-                });
-            });
-        });
+            const header5 = res5.headers['set-cookie'];
+            expect(header5).to.not.exist();
+        }
+        catch (err) {
+            expect(err).to.not.exist();
+        }
     });
 
-    it('does not set crumb cookie insecurely using https', (done) => {
+    it('does not set crumb cookie insecurely using https', async () => {
 
         const options = {
             host: 'localhost',
@@ -503,21 +490,21 @@ describe('Crumb', () => {
                 }
             }
         ]);
-        server.register([{ register: Crumb, options: null }], (err) => {
 
+        try {
+            await server.register([{ register: Crumb, options: null }]);
+
+            const res = await server.inject({ method: 'GET', url: '/1', headers: { host: 'localhost:443' } });
+
+            const header = res.headers['set-cookie'];
+            expect(header[0]).to.contain('crumb');
+        }
+        catch (err) {
             expect(err).to.not.exist();
-
-            server.inject({ method: 'GET', url: '/1', headers: { host: 'localhost:443' } }, (res) => {
-
-                const header = res.headers['set-cookie'];
-                expect(header[0]).to.contain('crumb');
-
-                done();
-            });
-        });
+        }
     });
 
-    it('validates crumb with X-CSRF-Token header', (done) => {
+    it('validates crumb with X-CSRF-Token header', async () => {
 
         const server = new Hapi.Server();
         server.connection();
@@ -592,89 +579,79 @@ describe('Crumb', () => {
 
         ]);
 
-        server.register([{ register: Vision }, { register: Crumb, options: { restful: true, cookieOptions: { isSecure: true } } }], (err) => {
-
-            expect(err).to.not.exist();
+        try {
+            await server.register([{ register: Vision }, { register: Crumb, options: { restful: true, cookieOptions: { isSecure: true } } }]);
 
             server.views(viewOptions);
 
-            server.inject({ method: 'GET', url: '/1' }, (res) => {
+            const res = await server.inject({ method: 'GET', url: '/1' });
 
-                const header = res.headers['set-cookie'];
-                expect(header.length).to.equal(1);
-                expect(header[0]).to.contain('Secure');
+            const header = res.headers['set-cookie'];
+            expect(header.length).to.equal(1);
+            expect(header[0]).to.contain('Secure');
 
-                const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+            const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
 
-                const validHeader = {};
-                validHeader.cookie = 'crumb=' + cookie[1];
-                validHeader['x-csrf-token'] = cookie[1];
+            const validHeader = {};
+            validHeader.cookie = 'crumb=' + cookie[1];
+            validHeader['x-csrf-token'] = cookie[1];
 
-                const invalidHeader = {};
-                invalidHeader.cookie = 'crumb=' + cookie[1];
-                invalidHeader['x-csrf-token'] = 'x' + cookie[1];
+            const invalidHeader = {};
+            invalidHeader.cookie = 'crumb=' + cookie[1];
+            invalidHeader['x-csrf-token'] = 'x' + cookie[1];
 
-                expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
+            expect(res.result).to.equal('<!DOCTYPE html><html><head><title>test</title></head><body><div><h1>hi</h1><h2>' + cookie[1] + '</h2></div></body></html>');
 
-                server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: validHeader }, (res2) => {
+            const res2 = await server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: validHeader });
 
-                    expect(res2.result).to.equal('valid');
+            expect(res2.result).to.equal('valid');
 
-                    server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: invalidHeader }, (res3) => {
+            const res3 = await server.inject({ method: 'POST', url: '/2', payload: '{ "key": "value" }', headers: invalidHeader });
 
-                        expect(res3.statusCode).to.equal(403);
+            expect(res3.statusCode).to.equal(403);
 
-                        server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } }, (res4) => {
+            const res4 = await server.inject({ method: 'POST', url: '/3', headers: { cookie: 'crumb=' + cookie[1] } });
 
-                            expect(res4.statusCode).to.equal(403);
+            expect(res4.statusCode).to.equal(403);
 
-                            server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: validHeader }, (res5) => {
+            const res5 = await server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: validHeader });
 
-                                expect(res5.result).to.equal('valid');
+            expect(res5.result).to.equal('valid');
 
-                                server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: invalidHeader }, (res6) => {
+            const res6 = await server.inject({ method: 'PUT', url: '/4', payload: '{ "key": "value" }', headers: invalidHeader });
 
-                                    expect(res6.statusCode).to.equal(403);
+            expect(res6.statusCode).to.equal(403);
 
-                                    server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: validHeader }, (res7) => {
+            const res7 = await server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: validHeader });
 
-                                        expect(res7.result).to.equal('valid');
+            expect(res7.result).to.equal('valid');
 
-                                        server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: invalidHeader }, (res8) => {
+            const res8 = await server.inject({ method: 'PATCH', url: '/5', payload: '{ "key": "value" }', headers: invalidHeader });
 
-                                            expect(res8.statusCode).to.equal(403);
+            expect(res8.statusCode).to.equal(403);
 
-                                            server.inject({ method: 'DELETE', url: '/6', headers: validHeader }, (res9) => {
+            const res9 = await server.inject({ method: 'DELETE', url: '/6', headers: validHeader });
 
-                                                expect(res9.result).to.equal('valid');
+            expect(res9.result).to.equal('valid');
 
-                                                server.inject({ method: 'DELETE', url: '/6', headers: invalidHeader }, (res10) => {
+            const res10 = await server.inject({ method: 'DELETE', url: '/6', headers: invalidHeader });
 
-                                                    expect(res10.statusCode).to.equal(403);
+            expect(res10.statusCode).to.equal(403);
 
-                                                    server.inject({ method: 'POST', url: '/7', payload: '{ "key": "value" }' }, (res11) => {
+            const res11 = await server.inject({ method: 'POST', url: '/7', payload: '{ "key": "value" }' });
 
-                                                        expect(res11.result).to.equal('valid');
+            expect(res11.result).to.equal('valid');
 
-                                                        const payload = { key: 'value', crumb: cookie[1] };
+            const payload = { key: 'value', crumb: cookie[1] };
 
-                                                        delete validHeader['x-csrf-token'];
-                                                        server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader }, (res12) => {
+            delete validHeader['x-csrf-token'];
 
-                                                            expect(res12.statusCode).to.equal(200);
-                                                            done();
-                                                        });
-                                                    });
-                                                });
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
+            const res12 = await server.inject({ method: 'POST', url: '/8', payload: JSON.stringify(payload), headers: validHeader });
+
+            expect(res12.statusCode).to.equal(200);
+        }
+        catch (err) {
+            expect(err).to.not.exist();
+        }
     });
 });
