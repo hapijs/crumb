@@ -2,46 +2,52 @@
 
 const Hapi = require('hapi');
 
-const server = new Hapi.Server();
-server.connection({ host: '127.0.0.1', port: 8000 });
+const server = new Hapi.Server({
+    host: '127.0.0.1',
+    port: 8000
+});
 
 // Add Crumb plugin
 
-server.register({ register: require('../'), options: { restful: true } }, (err) => {
+(async () => {
 
-    if (err) {
-        throw err;
-    }
-});
-
-server.route([
-
-    // a "crumb" cookie should be set with any request
-    // for cross-origin requests, set CORS "credentials" to true
-    // a route returning the crumb can be created like this
-
-    {
-        method: 'GET',
-        path: '/generate',
-        handler: function (request, reply) {
-
-            return reply({ crumb: server.plugins.crumb.generate(request, reply) });
+    await server.register({
+        plugin: require('../'),
+        options: {
+            restful: true
         }
-    },
+    });
 
-    // request header "X-CSRF-Token" with crumb value must be set in request for this route
+    server.route([
 
-    {
-        method: 'PUT',
-        path: '/crumbed',
-        handler: function (request, reply) {
+        // a "crumb" cookie should be set with any request
+        // for cross-origin requests, set CORS "credentials" to true
+        // a route returning the crumb can be created like this
 
-            return reply('Crumb route');
+        {
+            method: 'GET',
+            path: '/generate',
+            handler: function (request, h) {
+
+                return {
+                    crumb: server.plugins.crumb.generate(request, h)
+                };
+            }
+        },
+
+        // request header "X-CSRF-Token" with crumb value must be set in request for this route
+
+        {
+            method: 'PUT',
+            path: '/crumbed',
+            handler: function (request, h) {
+
+                return 'Crumb route';
+            }
         }
-    }
-]);
+    ]);
 
-server.start(() => {
+    await server.start();
 
     console.log('Example restful server running at:', server.info.uri);
-});
+})();

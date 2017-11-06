@@ -2,8 +2,10 @@
 
 const Hapi = require('hapi');
 
-const server = new Hapi.Server();
-server.connection({ host: '127.0.0.1', port: 8000 });
+const server = new Hapi.Server({
+    host: '127.0.0.1',
+    port: 8000
+});
 
 server.views({
     path: __dirname + '/templates',
@@ -12,32 +14,36 @@ server.views({
     }
 });
 
-server.register({ register: require('../'), options: { cookieOptions: { isSecure: false } } }, (err) => {
+(async () => {
 
-    if (err) {
-        throw err;
-    }
-});
+    await server.register({
+        plugin: require('../'),
+        options: {
+            cookieOptions: {
+                isSecure: false
+            }
+        }
+    });
 
-server.route({
-    method: 'get',
-    path: '/',
-    handler: function (request, reply) {
+    server.route({
+        method: 'get',
+        path: '/',
+        handler: function (request, h) {
 
-        return reply.view('index', { title: 'test', message: 'hi' });
-    }
-});
+            return h.view('index', { title: 'test', message: 'hi' });
+        }
+    });
 
-server.route({
-    method: 'post',
-    path: '/',
-    handler: function (request, reply) {
+    server.route({
+        method: 'post',
+        path: '/',
+        handler: function (request, h) {
 
-        return reply.view('message', { title: 'test', message: request.payload.message });
-    }
-});
+            return h.view('message', { title: 'test', message: request.payload.message });
+        }
+    });
 
-server.start(() => {
+    await server.start();
 
     console.log('Example server running at:', server.info.uri);
-});
+})();
