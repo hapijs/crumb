@@ -15,13 +15,13 @@
     "session"
   ],
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   },
   "dependencies": {
-    "boom": "6.x.x",
-    "cryptiles": "3.x.x",
-    "hoek": "4.x.x",
-    "joi": "12.x.x"
+    "boom": "7.x.x",
+    "cryptiles": "4.x.x",
+    "hoek": "5.x.x",
+    "joi": "13.x.x"
   },
   "peerDependencies": {
     "hapi": ">=12.x.x"
