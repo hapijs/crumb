@@ -18,7 +18,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "boom": "3.x.x",
+    "boom": "6.x.x",
     "cryptiles": "3.x.x",
     "hoek": "4.x.x",
     "joi": "12.x.x"
