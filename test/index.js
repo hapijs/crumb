@@ -3,7 +3,6 @@
 // Load modules
 /*eslint "hapi/no-shadow-relaxed": 0*/
 const Stream = require('stream');
-const Code = require('code');
 const Crumb = require('../');
 const Hapi = require('hapi');
 const Lab = require('lab');
@@ -20,7 +19,7 @@ const internals = {};
 const lab = exports.lab = Lab.script();
 const describe = lab.describe;
 const it = lab.it;
-const expect = Code.expect;
+const expect = lab.expect;
 const Vision = require('vision');
 
 

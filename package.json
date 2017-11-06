@@ -27,7 +27,6 @@
     "hapi": ">=12.x.x"
   },
   "devDependencies": {
-    "code": "4.x.x",
     "handlebars": "4.x.x",
     "hapi": "13.x.x",
     "lab": "14.x.x",
