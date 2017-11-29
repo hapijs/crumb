@@ -1,5 +1,5 @@
 # Reporting a security bug
-All security bugs are taken seriously and should be reported by email to stongo@gmail.com.
+All security bugs are taken seriously and should be reported by email to [security@hapijs.com]((mailto:security@hapijs.com)).
 
 Your email will be acknowledged within 24 hours, and you’ll receive a more  detailed response to your email within 48 hours indicating the next steps in handling your report.
 
@@ -7,8 +7,8 @@ After the initial reply to your report, the security team will endeavor to keep 
 
 If you have not received a reply to your email within 48 hours, or have not heard from the security team for the  past five days, there are a few steps you can take:
 
-- Email [Marcus Stong](mailto:stongo@gmail.com)
-- Give the hapi contributors a heads up on IRC in #hapi on irc.freenode.net
+- Email [hapi Security](mailto:security@hapijs.com)
+- Give the hapi contributors a heads at one of the locations under https://hapijs.com/community
 
 Thank you for taking the time to disclose the issue to us. Your efforts and responsible disclosure are greatly appreciated!
 
@@ -25,7 +25,7 @@ This process can take some time, especially when coordination is required with m
 A blog post about the issue will be published, customers notified and attribution to the finder given.
 
 # Comments on this Policy
-Can you help make this policy / process better? Please email stongo@gmail.com with your comments.
+Can you help make this policy / process better? Please email security@hapijs.com with your comments.
 
 # History
 
