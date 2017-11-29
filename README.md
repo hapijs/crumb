@@ -26,31 +26,33 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
   const Hapi = require('hapi');
   const Crumb = require('crumb');
 
-  const server = new Hapi.Server();
-
-  server.connection({ port: 8000 });
-
-  server.register({
-    register: crumb,
-
-    // plugin options
-    options: {}
+  const server = new Hapi.Server({
+    port: 8000
   });
 
-  server.route({
-    path: '/login',
-    method: 'GET',
-    config: {
-      plugins: {
-        // route specific options
-        crumb: {}
-      },
-      handler(request, reply) {
-        // this requires to have a view engine configured
-        return reply.view('some-view');
+  (async () => {
+    await server.register({
+      plugin: Crumb,
+
+      // plugin options
+      options: {}
+    });
+
+    server.route({
+      path: '/login',
+      method: 'GET',
+      options: {
+        plugins: {
+          // route specific options
+          crumb: {}
+        },
+        handler(request, h) {
+          // this requires to have a view engine configured
+          return h.view('some-view');
+        }
       }
-    }
-  });
+    });
+  })();
 ```
 
 For a complete example see [the examples folder](./example).
@@ -67,7 +69,7 @@ The following options are available when registering the plugin.
   * `addToViewContext` - whether to automatically add the crumb to view contexts as the given key. Defaults to `true`.
   * `cookieOptions` - storage options for the cookie containing the crumb, see the [server.state](http://hapijs.com/api#serverstatename-options) documentation of hapi for more information. Default to `cookieOptions.path=/`
   * `restful` - RESTful mode that validates crumb tokens from *"X-CSRF-Token"* request header for **POST**, **PUT**, **PATCH** and **DELETE** server routes. Disables payload/query crumb validation. Defaults to `false`.
-  * `skip` - a function with the signature of `function (request, reply) {}`, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped. Defaults to `false`.
+  * `skip` - a function with the signature of `function (request, h) {}`, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped. Defaults to `false`.
 
 ### Routes configuration
 
