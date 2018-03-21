@@ -20,7 +20,7 @@ TestStream.prototype._read = function () {
     }
     else {
         const str = '' + i;
-        const buf = new Buffer(str, 'ascii');
+        const buf = Buffer.from(str, 'ascii');
         this.push(buf);
     }
 };
