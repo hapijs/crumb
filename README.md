@@ -31,6 +31,7 @@ The following options are available when registering the plugin
 * 'cookieOptions' - storage options for the cookie containing the crumb, see the [server.state](http://hapijs.com/api#serverstatename-options) documentation of hapi for more information
 * 'restful' - RESTful mode that validates crumb tokens from "X-CSRF-Token" request header for POST, PUT, PATCH and DELETE server routes. Disables payload/query crumb validation (defaults to false)
 * 'skip' - a function with the signature of `function (request, reply) {}`, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped (defaults to false)
+* 'logUnauthorized' - whether to add to the request log with tag 'crumb' and data 'validation failed' (defaults to false)
 
 Additionally, some configuration can be passed on a per-route basis
 
