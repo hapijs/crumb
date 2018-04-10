@@ -316,18 +316,15 @@ describe('Crumb', () => {
 
         const server = new Hapi.Server();
 
-        let logFound = false;
+        let logFound;
         const preResponse = function (request, h) {
 
             const logs = request.logs;
-            const found = logs.find((log) => {
+            logFound = logs.find((log) => {
 
                 return log.tags[0] === 'crumb' && log.data === 'validation failed';
             });
 
-            if (found) {
-                logFound = true;
-            }
             return h.continue;
         };
 
@@ -361,25 +358,22 @@ describe('Crumb', () => {
             url: '/1',
             headers
         });
-        expect(logFound).to.equal(true);
+        expect(logFound).to.exist();
     });
 
     it('Does not add to the request log if plugin option logUnauthorized is set to false', async () => {
 
         const server = new Hapi.Server();
 
-        let logFound = true;
+        let logFound;
         const preResponse = function (request, h) {
 
             const logs = request.logs;
-            const found = logs.find((log) => {
+            logFound = logs.find((log) => {
 
                 return log.tags[0] === 'crumb' && log.data === 'validation failed';
             });
 
-            if (!found) {
-                logFound = false;
-            }
             return h.continue;
         };
 
@@ -414,7 +408,7 @@ describe('Crumb', () => {
             headers
         });
 
-        expect(logFound).to.equal(false);
+        expect(logFound).to.not.exist();
     });
 
     it('should fail to register with bad options', async () => {
