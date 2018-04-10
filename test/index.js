@@ -275,18 +275,15 @@ describe('Crumb', () => {
         const server = new Hapi.Server();
         server.connection();
 
-        let logFound = false;
+        let logFound;
         const preResponse = function (request, reply) {
 
             const logs = request.getLog();
-            const found = logs.find((log) => {
+            logFound = logs.find((log) => {
 
                 return log.tags[0] === 'crumb' && log.data === 'validation failed';
             });
 
-            if (found) {
-                logFound = true;
-            }
             return reply.continue();
         };
 
@@ -322,7 +319,7 @@ describe('Crumb', () => {
                 headers
             }, () => {
 
-                expect(logFound).to.equal(true);
+                expect(logFound).to.exist();
                 done();
             });
         });
@@ -333,18 +330,15 @@ describe('Crumb', () => {
         const server = new Hapi.Server();
         server.connection();
 
-        let logFound = true;
+        let logFound;
         const preResponse = function (request, reply) {
 
             const logs = request.getLog();
-            const found = logs.find((log) => {
+            logFound = logs.find((log) => {
 
                 return log.tags[0] === 'crumb' && log.data === 'validation failed';
             });
 
-            if (!found) {
-                logFound = false;
-            }
             return reply.continue();
         };
 
@@ -379,7 +373,7 @@ describe('Crumb', () => {
                 url: '/1'
             }, () => {
 
-                expect(logFound).to.equal(false);
+                expect(logFound).to.not.exist();
                 done();
             });
         });
