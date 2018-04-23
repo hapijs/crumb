@@ -270,6 +270,115 @@ describe('Crumb', () => {
         });
     });
 
+    it('Adds to the request log if plugin option logUnauthorized is set to true', (done) => {
+
+        const server = new Hapi.Server();
+        server.connection();
+
+        let logFound;
+        const preResponse = function (request, reply) {
+
+            const logs = request.getLog();
+            logFound = logs.find((log) => {
+
+                return log.tags[0] === 'crumb' && log.data === 'validation failed';
+            });
+
+            return reply.continue();
+        };
+
+        server.ext('onPreResponse', preResponse);
+
+        server.route({
+            method: 'POST',
+            path: '/1',
+            config: {
+                log: true
+            },
+            handler: (request, reply) => {
+
+                return reply('test');
+            }
+        });
+
+        server.register([
+            {
+                register: Crumb,
+                options: {
+                    logUnauthorized: true
+                }
+            }
+        ], () => {
+
+            const headers = {};
+            headers['X-API-Token'] = 'test';
+
+            server.inject({
+                method: 'POST',
+                url: '/1',
+                headers
+            }, () => {
+
+                expect(logFound).to.exist();
+                done();
+            });
+        });
+    });
+
+    it('Does not add to the request log if plugin option logUnauthorized is set to false', (done) => {
+
+        const server = new Hapi.Server();
+        server.connection();
+
+        let logFound;
+        const preResponse = function (request, reply) {
+
+            const logs = request.getLog();
+            logFound = logs.find((log) => {
+
+                return log.tags[0] === 'crumb' && log.data === 'validation failed';
+            });
+
+            return reply.continue();
+        };
+
+        server.ext('onPreResponse', preResponse);
+
+        server.route({
+            method: 'POST',
+            path: '/1',
+            config: {
+                log: true
+            },
+            handler: (request, reply) => {
+
+                return reply('test');
+            }
+        });
+
+        server.register([
+            {
+                register: Crumb,
+                options: {
+                    logUnauthorized: false
+                }
+            }
+        ], () => {
+
+            const headers = {};
+            headers['X-API-Token'] = 'test';
+
+            server.inject({
+                method: 'POST',
+                url: '/1'
+            }, () => {
+
+                expect(logFound).to.not.exist();
+                done();
+            });
+        });
+    });
+
     it('should fail to register with bad options', (done) => {
 
         const server = new Hapi.Server();
