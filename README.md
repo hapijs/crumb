@@ -4,7 +4,7 @@ CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/ha
 
 [![Build Status](https://secure.travis-ci.org/hapijs/crumb.png)](http://travis-ci.org/hapijs/crumb)
 
-Lead Maintainer: [Jonathan Samines](https://github.com/jonathansamines)
+Lead Maintainer: [Sanjay Pandit](https://github.com/spanditcaa)
 
 ## About CSRF
 ### What to Use Crumb for and When to Use It
