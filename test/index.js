@@ -1159,4 +1159,41 @@ describe('Crumb', () => {
 
         expect(res12.statusCode).to.equal(200);
     });
+
+    it('should set cookie but ignore check with dryRun flag turned on', async () => {
+
+        const server = new Hapi.Server();
+
+        server.route({
+            method: 'POST',
+            path: '/1',
+            handler: (request, h) => 'test'
+        });
+
+        const plugins = [
+            {
+                plugin: Crumb,
+                options: {
+                    dryRun: true
+                }
+            }
+        ];
+
+        await server.register(plugins);
+
+        const headers = {
+            'X-API-Token': 'test'
+        };
+
+        const res = await server.inject({
+            method: 'POST',
+            url: '/1',
+            headers
+        });
+
+        const header = res.headers['set-cookie'];
+
+        expect(header).to.exist();
+        expect(res.statusCode).to.equal(200);
+    });
 });
