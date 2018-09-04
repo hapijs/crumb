@@ -356,6 +356,7 @@ describe('Crumb', () => {
         await server.inject({
             method: 'POST',
             url: '/1',
+            payload: '{ "key": true }',
             headers
         });
         expect(logFound).to.exist();
@@ -1158,5 +1159,157 @@ describe('Crumb', () => {
         });
 
         expect(res12.statusCode).to.equal(200);
+    });
+
+    it('Adds to the request log if there are multiple cookie values', async () => {
+
+        const server = new Hapi.Server();
+        let logFound;
+
+        const preResponse = function (request, h) {
+
+            const logs = request.logs;
+            logFound = logs.find((log) => {
+
+                return log.tags[0] === 'crumb' && log.data === 'multiple cookies found';
+            });
+
+            return h.continue;
+        };
+
+        server.ext('onPreResponse', preResponse);
+
+        server.route({
+            method: 'GET',
+            path: '/1',
+            handler: (request, h) => {
+
+                return h.view('index', {
+                    title: 'test',
+                    message: 'hi'
+                });
+            }
+        });
+
+        server.route({
+            method: 'POST',
+            path: '/2',
+            config: {
+                log: {
+                    collect: true
+                }
+            },
+            handler: (request, h) => {
+
+                return 'success';
+            }
+        });
+
+        await server.register([{
+            plugin: Vision
+        }, {
+            plugin: Crumb
+        }]);
+
+        server.views(internals.viewOptions);
+
+        const res = await server.inject({
+            method: 'GET',
+            url: '/1'
+        });
+
+        const header = res.headers['set-cookie'];
+
+        const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+
+        const headers = {
+            cookie: 'crumb=' + cookie[1] + '; crumb=' + cookie[1] // multiple cookies
+        };
+
+        await server.inject({
+            method: 'POST',
+            url: '/2',
+            payload: '{ "key": "value", "crumb": "' + cookie[1] + '" }',
+            headers
+        });
+        expect(logFound).to.exist();
+    });
+
+    it('Adds to the request log if there are multiple cookie values in restful mode', async () => {
+
+        const server = new Hapi.Server();
+        let logFound;
+
+        const preResponse = function (request, h) {
+
+            const logs = request.logs;
+            logFound = logs.find((log) => {
+
+                return log.tags[0] === 'crumb' && log.data === 'multiple cookies found';
+            });
+
+            return h.continue;
+        };
+
+        server.ext('onPreResponse', preResponse);
+
+        server.route({
+            method: 'GET',
+            path: '/1',
+            handler: (request, h) => {
+
+                return h.view('index', {
+                    title: 'test',
+                    message: 'hi'
+                });
+            }
+        });
+
+        server.route({
+            method: 'POST',
+            path: '/2',
+            config: {
+                log: {
+                    collect: true
+                }
+            },
+            handler: (request, h) => {
+
+                return 'success';
+            }
+        });
+
+        await server.register([{
+            plugin: Vision
+        }, {
+            plugin: Crumb,
+            options: {
+                restful: true
+            }
+        }]);
+
+        server.views(internals.viewOptions);
+
+        const res = await server.inject({
+            method: 'GET',
+            url: '/1'
+        });
+
+        const header = res.headers['set-cookie'];
+
+        const cookie = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/);
+
+        const headers = {
+            cookie: 'crumb=' + cookie[1] + '; crumb=' + cookie[1], // multiple cookies
+            'X-CSRF-Token': cookie[1]
+        };
+
+        await server.inject({
+            method: 'POST',
+            url: '/2',
+            payload: '{ "stuff": true }',
+            headers
+        });
+        expect(logFound).to.exist();
     });
 });
