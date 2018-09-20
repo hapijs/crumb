@@ -16,4 +16,5 @@ config.json
 coverage.*
 lib-cov
 .vscode
+.history
 package-lock.json

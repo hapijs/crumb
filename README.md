@@ -71,6 +71,7 @@ The following options are available when registering the plugin.
   * `headerName` - specify the name of the custom CSRF header. Defaults to `X-CSRF-Token`.
   * `restful` - RESTful mode that validates crumb tokens from *"X-CSRF-Token"* request header for **POST**, **PUT**, **PATCH** and **DELETE** server routes. Disables payload/query crumb validation. Defaults to `false`.
   * `skip` - a function with the signature of `function (request, h) {}`, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped. Defaults to `false`.
+  * `enforce` - defaults to true, using enforce with false will set the CSRF header cookie but won't execute the validation
   * `logUnauthorized` - whether to add to the request log with tag 'crumb' and data 'validation failed' (defaults to false)
   
 ### Routes configuration
@@ -80,3 +81,9 @@ Additionally, some configuration can be passed on a per-route basis. Disable Cru
   * `key` - the key used in the view contexts and payloads for the crumb. Defaults to `plugin.key`.
   * `source` - can be either `payload` or `query` specifying how the crumb will be sent in requests. Defaults to `payload`.
   * `restful` - an override for the server's 'restful' setting. Defaults to `plugin.restful`.
+
+
+### Contribute
+
+* First, install `lab` and `code` with global `npm i -g lab code`
+* Run tests with `npm test`
