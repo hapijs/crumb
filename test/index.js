@@ -1160,7 +1160,7 @@ describe('Crumb', () => {
         expect(res12.statusCode).to.equal(200);
     });
 
-    it('should set cookie but ignore check with dryRun flag turned on', async () => {
+    it('should set cookie but ignore check with enforce flag turned off', async () => {
 
         const server = new Hapi.Server();
 
@@ -1174,7 +1174,7 @@ describe('Crumb', () => {
             {
                 plugin: Crumb,
                 options: {
-                    dryRun: true
+                    enforce: false
                 }
             }
         ];
