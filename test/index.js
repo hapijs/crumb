@@ -1312,4 +1312,41 @@ describe('Crumb', () => {
         });
         expect(logFound).to.exist();
     });
+
+    it('should set cookie but ignore check with enforce flag turned off', async () => {
+
+        const server = new Hapi.Server();
+
+        server.route({
+            method: 'POST',
+            path: '/1',
+            handler: (request, h) => 'test'
+        });
+
+        const plugins = [
+            {
+                plugin: Crumb,
+                options: {
+                    enforce: false
+                }
+            }
+        ];
+
+        await server.register(plugins);
+
+        const headers = {
+            'X-API-Token': 'test'
+        };
+
+        const res = await server.inject({
+            method: 'POST',
+            url: '/1',
+            headers
+        });
+
+        const header = res.headers['set-cookie'];
+
+        expect(header).to.exist();
+        expect(res.statusCode).to.equal(200);
+    });
 });
