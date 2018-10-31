@@ -13,7 +13,10 @@ const plugins = [
     {
         plugin: require('../'),
         options: {
-            restful: true
+            restful: true,
+            cookieOptions: {
+                isSecure: false
+            }
         }
     }
 ];
