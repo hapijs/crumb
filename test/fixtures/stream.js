@@ -1,7 +1,7 @@
 'use strict';
 
 const Stream = require('stream');
-const Hoek = require('hoek');
+const Util = require('util');
 
 const TestStream = function (opt) {
 
@@ -10,7 +10,7 @@ const TestStream = function (opt) {
     this._index = 1;
 };
 
-Hoek.inherits(TestStream, Stream.Readable);
+Util.inherits(TestStream, Stream.Readable);
 
 TestStream.prototype._read = function () {
 
