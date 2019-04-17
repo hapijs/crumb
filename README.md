@@ -67,8 +67,8 @@ The following options are available when registering the plugin.
   * `size` - the length of the crumb to generate. Defaults to `43`, which is 256 bits, see [cryptile](https://github.com/hapijs/cryptiles) for more information.
   * `autoGenerate` - whether to automatically generate a new crumb for requests. Defaults to `true`.
   * `addToViewContext` - whether to automatically add the crumb to view contexts as the given key. Defaults to `true`.
-  * `cookieOptions` - storage options for the cookie containing the crumb, see the [server.state](http://hapijs.com/api#serverstatename-options) documentation of hapi for more information. Default to `cookieOptions.path=/`
-  * `headerName` - specify the name of the custom CSRF header. Defaults to `X-CSRF-Token`.
+  * `cookieOptions` - storage options for the cookie containing the crumb, see the [server.state](http://hapijs.com/api#serverstatename-options) documentation of hapi for more information. Default to `cookieOptions.path=/` . **Note that the cookie is not set as secure by default.  It should be set as 'secure:true' for production use.**
+  * `headerName` - specify the name of the custom CSRF header. Defaults to `X-CSRF-Token`.
   * `restful` - RESTful mode that validates crumb tokens from *"X-CSRF-Token"* request header for **POST**, **PUT**, **PATCH** and **DELETE** server routes. Disables payload/query crumb validation. Defaults to `false`.
   * `skip` - a function with the signature of `function (request, h) {}`, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped. Defaults to `false`.
   * `enforce` - defaults to true, using enforce with false will set the CSRF header cookie but won't execute the validation
