@@ -1,26 +1,22 @@
 'use strict';
 
-// Load modules
+const Stream = require('stream');
 
-const Code = require('code');
-const Crumb = require('../');
-const Hapi = require('hapi');
-const Lab = require('lab');
-const TestStream = require('./fixtures/stream');
+const Code = require('@hapi/code');
+const Crumb = require('..');
+const Hapi = require('@hapi/hapi');
+const Lab = require('@hapi/lab');
+const Vision = require('@hapi/vision');
+
 const TLSCert = require('./fixtures/cert');
 const Views = require('./fixtures/views');
 
 
-// Declare internals
-
 const internals = {};
 
 
-// Test shortcuts
-
 const { describe, it } = exports.lab = Lab.script();
 const { expect } = Code;
-const Vision = require('vision');
 
 internals.viewOptions = {
     path: __dirname + '/templates',
@@ -183,6 +179,32 @@ describe('Crumb', () => {
         expect(res5.result).to.equal(Views.viewWithoutCrumb());
 
         // Works on POST stream requests
+
+
+
+        const TestStream = class extends Stream.Readable {
+
+            constructor(options) {
+
+                super(options);
+                this._max = 2;
+                this._index = 1;
+            }
+
+            _read() {
+
+                const i = this._index++;
+                if (i > this._max) {
+                    this.push(null);
+                }
+                else {
+                    const str = '' + i;
+                    const buf = Buffer.from(str, 'ascii');
+                    this.push(buf);
+                }
+            }
+        };
+
         const res6 = await server.inject({
             method: 'POST',
             url: '/5',
@@ -545,6 +567,42 @@ describe('Crumb', () => {
 
         expect(res.statusCode).to.equal(200);
         expect(header).to.not.exist();
+    });
+
+    it('validates crumb when "skip" option returns false', async () => {
+
+        const server = new Hapi.Server();
+
+        server.route({
+            method: 'POST',
+            path: '/1',
+            handler: (request, h) => 'test'
+        });
+
+        const skip = (request) => false;
+
+        const plugins = [
+            {
+                plugin: Crumb,
+                options: {
+                    skip
+                }
+            }
+        ];
+
+        await server.register(plugins);
+
+        const headers = {
+            'X-API-Token': 'test'
+        };
+
+        const res = await server.inject({
+            method: 'POST',
+            url: '/1',
+            headers
+        });
+
+        expect(res.statusCode).to.equal(403);
     });
 
     it('ensures crumb "skip" option is a function', async () => {

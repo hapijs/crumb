@@ -1,19 +1,16 @@
 {
   "name": "example",
   "version": "1.0.0",
-  "description": "",
   "main": "restful.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "start:restful": "node restful.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "handlebars": "^4.x.x",
-    "hapi": "^17.x.x",
-    "vision": "^5.x.x"
-  }
+    "@hapi/hapi": "18.x.x",
+    "@hapi/vision": "5.x.x",
+    "handlebars": "4.x.x"
+  },
+  "license": "BSD-3-Clause"
 }

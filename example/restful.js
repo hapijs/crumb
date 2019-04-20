@@ -1,7 +1,9 @@
 'use strict';
 
-const Hapi = require('hapi');
-const Vision = require('vision');
+const Crumb = require('..');
+const Hapi = require('@hapi/hapi');
+const Vision = require('@hapi/vision');
+
 
 const server = new Hapi.Server({
     host: '127.0.0.1',
@@ -11,7 +13,7 @@ const server = new Hapi.Server({
 const plugins = [
     Vision,
     {
-        plugin: require('../'),
+        plugin: Crumb,
         options: {
             restful: true,
             cookieOptions: {

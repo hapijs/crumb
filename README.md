@@ -1,12 +1,14 @@
-![crumb Logo](https://raw.github.com/hapijs/crumb/master/images/crumb.png)
+<a href="http://hapijs.com"><img src="https://github.com/hapijs/assets/blob/master/images/family.svg" width="180px" align="right" /></a>
 
-CSRF crumb generation and validation for [**hapi**](https://github.com/hapijs/hapi)
+# crumb
 
-[![Build Status](https://secure.travis-ci.org/hapijs/crumb.png)](http://travis-ci.org/hapijs/crumb)
+CSRF crumb generation and validation.
 
-Lead Maintainer: [Sanjay Pandit](https://github.com/spanditcaa)
+[![Build Status](https://secure.travis-ci.org/hapijs/crumb.svg?branch=master)](http://travis-ci.org/hapijs/crumb)
+
 
 ## About CSRF
+
 ### What to Use Crumb for and When to Use It
 
 Crumb is used to diminish CSRF attacks using a random unique token that is validated on the server side.
@@ -23,12 +25,10 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
 ## Usage
 
 ```js
-  const Hapi = require('hapi');
-  const Crumb = require('crumb');
+  const Hapi = require('@hapi/hapi');
+  const Crumb = require('@hapi/crumb');
 
-  const server = new Hapi.Server({
-    port: 8000
-  });
+  const server = new Hapi.Server({ port: 8000 });
 
   (async () => {
     await server.register({
@@ -81,9 +81,3 @@ Additionally, some configuration can be passed on a per-route basis. Disable Cru
   * `key` - the key used in the view contexts and payloads for the crumb. Defaults to `plugin.key`.
   * `source` - can be either `payload` or `query` specifying how the crumb will be sent in requests. Defaults to `payload`.
   * `restful` - an override for the server's 'restful' setting. Defaults to `plugin.restful`.
-
-
-### Contribute
-
-* First, install `lab` and `code` with global `npm i -g lab code`
-* Run tests with `npm test`
