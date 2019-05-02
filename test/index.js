@@ -526,16 +526,27 @@ describe('Crumb', () => {
             {
                 plugin: Crumb,
                 options: {
-                    autoGenerate: false
+                    autoGenerate: false,
+                    restful: true
                 }
             }
         ]);
 
         server.views(internals.viewOptions);
 
-        const res = await server.inject({ method: 'POST', url: '/1' });
-
+        let res = await server.inject({ method: 'POST', url: '/1' });
         expect(res.statusCode).to.equal(403);
+
+        const crumbValue = 'someCrumbValue';
+        res = await server.inject({
+            method: 'POST',
+            url: '/1',
+            headers: {
+                cookie: `crumb=${crumbValue}`,
+                'X-CSRF-token': crumbValue
+            }
+        });
+        expect(res.statusCode).to.equal(200);
     });
 
     it('fails validation when no payload provided and not using restful mode', async () => {
