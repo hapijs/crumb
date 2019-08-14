@@ -4,7 +4,7 @@
 
 CSRF crumb generation and validation.
 
-[![Build Status](https://secure.travis-ci.org/hapijs/crumb.svg?branch=master)](http://travis-ci.org/hapijs/crumb)
+[![Build Status](https://secure.travis-ci.org/hapijs/crumb.svg?branch=master)](http://travis-ci.org/hapijs/crumb) [![Greenkeeper badge](https://badges.greenkeeper.io/hapijs/crumb.svg)](https://greenkeeper.io/)
 
 
 ## About CSRF
