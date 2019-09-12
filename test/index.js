@@ -506,6 +506,49 @@ describe('Crumb', () => {
         expect(header.length).to.equal(1);
     });
 
+    it('route should still validate crumb when autoGenerate is false and route.options.plugins.crumb is not defined', async () => {
+
+        const server = new Hapi.Server();
+
+        server.route([
+            {
+                method: 'POST',
+                path: '/1',
+                handler: (request, h) => {
+
+                    return 'bonjour';
+                }
+            }
+        ]);
+
+        await server.register([
+            Vision,
+            {
+                plugin: Crumb,
+                options: {
+                    autoGenerate: false,
+                    restful: true
+                }
+            }
+        ]);
+
+        server.views(internals.viewOptions);
+
+        let res = await server.inject({ method: 'POST', url: '/1' });
+        expect(res.statusCode).to.equal(403);
+
+        const crumbValue = 'someCrumbValue';
+        res = await server.inject({
+            method: 'POST',
+            url: '/1',
+            headers: {
+                cookie: `crumb=${crumbValue}`,
+                'X-CSRF-token': crumbValue
+            }
+        });
+        expect(res.statusCode).to.equal(200);
+    });
+
     it('fails validation when no payload provided and not using restful mode', async () => {
 
         const server = new Hapi.Server();
