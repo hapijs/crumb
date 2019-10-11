@@ -45,7 +45,7 @@ Crumb has been refactored to securely work with CORS, as [OWASP](https://www.owa
   })();
 ```
 
-For a complete example see [the examples folder](./example).
+For a complete example see [the examples folder](https://github.com/hapijs/crumb/tree/master/example).
 
 ## Options
 
