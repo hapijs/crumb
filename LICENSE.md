@@ -1,4 +1,4 @@
-Copyright (c) 2013-2019, Sideway Inc, and project contributors  
+Copyright (c) 2013-2020, Sideway Inc, and project contributors  
 Copyright (c) 2013-2014, Walmart.  
 All rights reserved.
 
