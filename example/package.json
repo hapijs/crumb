@@ -8,7 +8,7 @@
     "start:restful": "node restful.js"
   },
   "devDependencies": {
-    "@hapi/hapi": "18.x.x",
+    "@hapi/hapi": "20.x.x",
     "@hapi/vision": "5.x.x",
     "handlebars": "4.x.x"
   },
