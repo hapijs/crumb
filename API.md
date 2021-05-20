@@ -63,7 +63,8 @@ The following options are available when registering the plugin.
   * `skip` - a function with the signature of `function (request, h) {}`, which when provided, is called for every request. If the provided function returns true, validation and generation of crumb is skipped. Defaults to `false`.
   * `enforce` - defaults to true, using enforce with false will set the CSRF header cookie but won't execute the validation
   * `logUnauthorized` - whether to add to the request log with tag 'crumb' and data 'validation failed' (defaults to false)
-  
+  * `method` - The token generation method (and therefore how to validate), could take values `random` or `hmac`. Defaults to `random`, if set to `hmac` crumb will use the `Hmac Based Token pattern` has described by OWASP.    
+  * `sessionKey` - Define which key of `auth.credentials` should be used during token creation if specified method is `hmac`
 ### Routes configuration
 
 Additionally, some configuration can be passed on a per-route basis. Disable Crumb for a particular route by passing `false` instead of a configuration object.
