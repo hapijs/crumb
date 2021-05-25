@@ -25,7 +25,7 @@
     "@hapi/hapi": "20.x.x",
     "@hapi/lab": "24.x.x",
     "@hapi/vision": "6.x.x",
-    "handlebars": "^4.7.0"
+    "handlebars": "^4.7.7"
   },
   "scripts": {
     "test": "lab -t 100 -a @hapi/code -L",
