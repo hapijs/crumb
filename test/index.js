@@ -30,7 +30,7 @@ describe('Crumb', () => {
 
     it('returns view with crumb', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route([
             {
@@ -258,7 +258,7 @@ describe('Crumb', () => {
 
     it('Does not add crumb to view context when "addToViewContext" option set to false', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route({
             method: 'GET',
@@ -301,7 +301,7 @@ describe('Crumb', () => {
 
     it('Works without specifying plugin options', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route({
             method: 'GET',
@@ -336,7 +336,7 @@ describe('Crumb', () => {
 
     it('Adds to the request log if plugin option logUnauthorized is set to true', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         let logFound;
         const preResponse = function (request, h) {
@@ -386,7 +386,7 @@ describe('Crumb', () => {
 
     it('Does not add to the request log if plugin option logUnauthorized is set to false', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         let logFound;
         const preResponse = function (request, h) {
@@ -436,7 +436,7 @@ describe('Crumb', () => {
 
     it('should fail to register with bad options', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         try {
             await server.register({
@@ -456,7 +456,7 @@ describe('Crumb', () => {
 
     it('route uses crumb when route.options.plugins.crumb set to true and autoGenerate set to false', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route([
             {
@@ -508,7 +508,7 @@ describe('Crumb', () => {
 
     it('route should still validate crumb when autoGenerate is false and route.options.plugins.crumb is not defined', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route([
             {
@@ -551,7 +551,7 @@ describe('Crumb', () => {
 
     it('fails validation when no payload provided and not using restful mode', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route({
             method: 'POST',
@@ -575,7 +575,7 @@ describe('Crumb', () => {
 
     it('does not validate crumb when "skip" option returns true', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route({
             method: 'POST',
@@ -614,7 +614,7 @@ describe('Crumb', () => {
 
     it('validates crumb when "skip" option returns false', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route({
             method: 'POST',
@@ -650,7 +650,7 @@ describe('Crumb', () => {
 
     it('ensures crumb "skip" option is a function', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route({
             method: 'POST',
@@ -676,7 +676,7 @@ describe('Crumb', () => {
 
     it('does not set crumb cookie insecurely', async () => {
 
-        const server = new Hapi.Server({
+        const server = Hapi.server({
             host: 'localhost',
             port: 80,
             routes: {
@@ -775,7 +775,7 @@ describe('Crumb', () => {
             tls: TLSCert
         };
 
-        const server = new Hapi.Server(options);
+        const server = Hapi.server(options);
 
         server.route([
             {
@@ -801,7 +801,7 @@ describe('Crumb', () => {
 
     it('validates crumb with X-CSRF-Token header', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route([
             {
@@ -1032,7 +1032,7 @@ describe('Crumb', () => {
 
     it('validates crumb with a custom header name', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route([
             {
@@ -1264,7 +1264,7 @@ describe('Crumb', () => {
 
     it('Adds to the request log if there are multiple cookie values', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
         let logFound;
 
         const preResponse = function (request, h) {
@@ -1338,7 +1338,7 @@ describe('Crumb', () => {
 
     it('Adds to the request log if there are multiple cookie values in restful mode', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
         let logFound;
 
         const preResponse = function (request, h) {
@@ -1416,7 +1416,7 @@ describe('Crumb', () => {
 
     it('should set cookie but ignore check with enforce flag turned off', async () => {
 
-        const server = new Hapi.Server();
+        const server = Hapi.server();
 
         server.route({
             method: 'POST',

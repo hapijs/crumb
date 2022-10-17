@@ -5,7 +5,7 @@ const Hapi = require('@hapi/hapi');
 const Vision = require('@hapi/vision');
 
 
-const server = new Hapi.Server({
+const server = Hapi.server({
     host: '127.0.0.1',
     port: 8000
 });
