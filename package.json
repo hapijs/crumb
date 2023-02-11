@@ -1,7 +1,7 @@
 {
   "name": "@hapi/crumb",
   "description": "CSRF crumb generation and validation plugin",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "repository": "git://github.com/hapijs/crumb",
   "main": "lib/index.js",
   "files": [
