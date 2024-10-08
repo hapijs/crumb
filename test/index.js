@@ -573,6 +573,45 @@ describe('Crumb', () => {
         expect(res.statusCode).to.equal(403);
     });
 
+    it('does not validate crumb when route.options.plugins.crumb is false', async () => {
+
+        const server = Hapi.server();
+
+        server.route({
+            method: 'POST',
+            path: '/1',
+            options: {
+                plugins: {
+                    crumb: false
+                }
+            },
+            handler: (request, h) => 'test'
+        });
+
+        const plugins = [
+            {
+                plugin: Crumb
+            }
+        ];
+
+        await server.register(plugins);
+
+        const headers = {
+            'X-API-Token': 'test'
+        };
+
+        const res = await server.inject({
+            method: 'POST',
+            url: '/1',
+            headers
+        });
+
+        const header = res.headers['set-cookie'];
+
+        expect(res.statusCode).to.equal(200);
+        expect(header).to.not.exist();
+    });
+
     it('does not validate crumb when "skip" option returns true', async () => {
 
         const server = Hapi.server();
